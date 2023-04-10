@@ -51,9 +51,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # DRF
+    'rest_framework',
+    'rest_framework.authtoken',
+
+    # rest_auth
+    'rest_auth',
+
     ## 새로 추가한 앱
     'webpage',
-    'accounts'
+    'accounts',
+
 ]
 
 MIDDLEWARE = [
@@ -122,7 +131,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'Aisa/Seoul'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -138,3 +147,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# REST FRAMEWORK
+
+REST_FRAMEWORK = { # 권한 설정
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+# models 정의
