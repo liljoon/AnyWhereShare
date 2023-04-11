@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     ## 새로 추가한 앱
     'webpage',
     'accounts',
+    'share',
 
 ]
 
