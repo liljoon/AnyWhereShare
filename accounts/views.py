@@ -5,12 +5,13 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from .serializers import AccountDetailSerializer
 from .models import Account
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate
+from django.contrib.auth import logout
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import json, bcrypt
 class ListAccountsView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         accounts = Account.objects.all()
         serializer = AccountDetailSerializer(accounts, many=True)
@@ -18,6 +19,7 @@ class ListAccountsView(APIView):
 
 
 class SignupAccountsView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         data = json.loads(request.body)
         try:
@@ -35,18 +37,7 @@ class SignupAccountsView(APIView):
                 accountType = 'RE',
             )
             account.save()
-
-            refresh = RefreshToken.for_user(account)
-            res = Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            },
-                status=status.HTTP_200_OK,
-            )
-            # jwt 토큰 => 쿠키에 저장
-            res.set_cookie('access', access_token, httponly=True)
-            res.set_cookie('refresh', refresh_token, httponly=True)
-            return res
+            return JsonResponse({'message': '회원가입 완료'}, status=status.HTTP_200_OK)
         except KeyError:
             return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -81,6 +72,7 @@ class SignupAccountsView(APIView):
 
 
 class DuplicateView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         accounts = Account.objects.all()
         data = json.loads(request.body)
@@ -107,6 +99,7 @@ class DuplicateView(APIView):
 
 
 class LoginAccountsView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         data = json.loads(request.body)
         try:
@@ -116,39 +109,33 @@ class LoginAccountsView(APIView):
             if not bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
                 return JsonResponse({'message': '아이디나 비밀번호가 틀림'}, status=status.HTTP_200_OK)
 
-            token = TokenObtainPairSerializer.get_token(user)
-            refresh_token = str(token)
-            access_token = str(token.access_token)
-            response = Response(
-                {
-                    'message': '로그인 성공',
-                    'token': {
-                        'access': access_token,
-                        'refresh': refresh_token
-                    },
-                },
-                status=status.HTTP_200_OK
-            )
-            response.set_cookie('access', access_token, httponly=True)
-            response.set_cookie('refresh', refresh_token, httponly=True)
-            return response
+            refresh = RefreshToken.for_user(user)
+            return JsonResponse({
+                    'access_token': str(refresh.access_token),
+                    'refresh_token': str(refresh),
+                }, status=status.HTTP_200_OK)
         except KeyError:
             return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutAccountsView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
-        response = JsonResponse({
-            'message': 'Logout success'
-            }, status=status.HTTP_202_ACCEPTED)
-        response.delete_cookie('access')
-        response.delete_cookie('refresh')
-        return response
+        try:
+            request.user.auth_token.delete()
+            logout(request)
+            return Response({'message': '로그아웃 되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+        except:
+            return Response({'error': '로그아웃에 실패했습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class HelloView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        return Response('hello')
+        content = {'message': 'Hello, {}!'.format(request.user.username)}
+        return Response(content)
 
 class DetailAccountsView(APIView):
     def get(self, request, userId):
