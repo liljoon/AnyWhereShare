@@ -3,73 +3,52 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import JsonResponse
-from .serializers import AccountDetailSerializer
+from .serializers import AccountSignupSerializer
 from .models import Account
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import logout
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
+import json
 
-import json, bcrypt
+
 class ListAccountsView(APIView):
     permission_classes = [AllowAny]
+
     def get(self, request):
         accounts = Account.objects.all()
-        serializer = AccountDetailSerializer(accounts, many=True)
+        serializer = AccountSignupSerializer(accounts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class SignupAccountsView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
-        data = json.loads(request.body)
-        try:
-            req_userid = data['userId']
-            req_password = bcrypt.hashpw(data['password'].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
-            req_username = data['username']
-            req_email = data['email']
-            if Account.objects.filter(email=req_email).exists():
-                return JsonResponse({'message': '이미 존재하는 이메일'}, status=status.HTTP_200_OK)
-            account = Account.objects.create(
-                userId = req_userid,
-                password = req_password,
-                username = req_username,
-                email = req_email,
-                accountType = 'RE',
+        serializer = AccountSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            # jwt 토큰 접근
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "회원가입 성공",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
             )
-            account.save()
-            return JsonResponse({'message': '회원가입 완료'}, status=status.HTTP_200_OK)
-        except KeyError:
-            return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
-# class SignupAccountsView(APIView):
-#     def post(self, request):
-#         serializer = AccountSignupSerializer(data=request.data)
-#         if serializer.is_valid():
-#             if Account.objects.filter(email=serializer.validated_data['email']).exists():
-#                 return JsonResponse({'message': '이미 존재하는 이메일'}, status=status.HTTP_200_OK)
-#             account = serializer.save()
-#
-#             token = TokenObtainPairSerializer.get_token(account)
-#             refresh_token = str(token)
-#             access_token = str(token.access_token)
-#             res = Response(
-#                 {
-#                     'user': serializer.data,
-#                     'message': '회원가입 성공',
-#                     'token': {
-#                         'access': access_token,
-#                         'refresh': refresh_token,
-#                     },
-#                 },
-#                 status=status.HTTP_200_OK,
-#             )
-#             # jwt 토큰 => 쿠키에 저장
-#             res.set_cookie('access', access_token, httponly=True)
-#             res.set_cookie('refresh', refresh_token, httponly=True)
-#
-#             return res
-#         return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+            # jwt 토큰 => 쿠키에 저장
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
 
+            return res
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DuplicateView(APIView):
     permission_classes = [AllowAny]
@@ -79,54 +58,60 @@ class DuplicateView(APIView):
         try:
             req_userid = data['userId']
             if accounts.filter(userId=req_userid).exists():
-                return JsonResponse({'isDuplicated': True, 'message': '아이디 중복'}, status=status.HTTP_200_OK)
-            return JsonResponse({'isDuplicated': False, 'message': '아이디 사용 가능'}, status=status.HTTP_200_OK)
+                return Response({'isDuplicated': True, 'message': '아이디 중복'}, status=status.HTTP_200_OK)
+            return Response({'isDuplicated': False, 'message': '아이디 사용 가능'}, status=status.HTTP_200_OK)
         except KeyError:
-            return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
-
-# class LoginAccountsView(APIView):
-#     def post(self, request):
-#         data = json.loads(request.body)
-#         try:
-#             req_userid = data['userId']
-#             if Account.objects.filter(userId=req_userid).exists():
-#                 user = Account.objects.get(userId=req_userid)
-#             if not bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
-#                 return JsonResponse({'message': '아이디나 비밀번호가 틀림'}, status=status.HTTP_200_OK)
-#             return JsonResponse({'message': '로그인 성공'}, status=status.HTTP_200_OK)
-#         except KeyError:
-#             return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginAccountsView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
-        data = json.loads(request.body)
-        try:
-            req_userid = data['userId']
-            if Account.objects.filter(userId=req_userid).exists():
-                user = Account.objects.get(userId=req_userid)
-            if not bcrypt.checkpw(data['password'].encode('UTF-8'), user.password.encode('UTF-8')):
-                return JsonResponse({'message': '아이디나 비밀번호가 틀림'}, status=status.HTTP_200_OK)
-
-            refresh = RefreshToken.for_user(user)
-            return JsonResponse({
-                    'access_token': str(refresh.access_token),
-                    'refresh_token': str(refresh),
-                }, status=status.HTTP_200_OK)
-        except KeyError:
-            return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
-
+        # 유저 인증
+        user = authenticate(
+            userId=request.data.get("userId"), password=request.data.get("password")
+        )
+        # 이미 회원가입 된 유저일 때
+        if user is not None:
+            serializer = AccountSignupSerializer(user)
+            # jwt 토큰 접근
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            res = Response(
+                {
+                    "user": serializer.data,
+                    "message": "로그인 성공",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            # jwt 토큰 => 쿠키에 저장
+            res.set_cookie("access", access_token, httponly=True)
+            res.set_cookie("refresh", refresh_token, httponly=True)
+            return res
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class LogoutAccountsView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
+        # 쿠키에 저장된 토큰 삭제 => 로그아웃 처리
         try:
-            request.user.auth_token.delete()
-            logout(request)
-            return Response({'message': '로그아웃 되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+            response = Response({
+                "message": "로그아웃 성공"
+                }, status=status.HTTP_200_OK)
+            response.delete_cookie("access")
+            response.delete_cookie("refresh")
+            return response
         except:
-            return Response({'error': '로그아웃에 실패했습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            response = Response({
+                "message": "로그아웃 실패"
+                }, status=status.HTTP_400_BAD_REQUEST)
+            return response
 
 
 
@@ -138,10 +123,11 @@ class HelloView(APIView):
         return Response(content)
 
 class DetailAccountsView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, userId):
         try:
             account = get_object_or_404(Account, pk=userId)
-            serializer = AccountDetailSerializer(account)
+            serializer = AccountSignupSerializer(account)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
             return JsonResponse({'message': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
