@@ -5,7 +5,7 @@ from .models import User
 from .serializers import UserDetailSerializer, UserLoginSerializer
 from datetime import datetime, timedelta
 from config import settings
-import jwt
+import jwt, bcrypt
 
 
 def jwt_auth(func):
@@ -53,10 +53,11 @@ class LoginView(APIView):
     def post(self, request):
         userId = request.data.get('userId')
         password = request.data.get('password')
-        user = User.objects.filter(userId=userId, password=password).first()
+        user = User.objects.filter(userId=userId).first()
         if not user:
             return Response({'message': '로그인 실패'}, status=status.HTTP_401_UNAUTHORIZED)
-
+        if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+            return Response({'message': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
         # JWT Payload 생성
         payload = {
             'userId': user.userId,
@@ -73,8 +74,9 @@ class LogoutView(APIView):
     @jwt_auth
     def get(self, request):
         try:
-            request.user.auth_token.delete()
-            return Response({'message': '로그아웃 성공'}, status=status.HTTP_200_OK)
+            response = Response({'message': '로그아웃 성공'}, status=status.HTTP_200_OK)
+            response.delete_cookie('Authorization')
+            return response
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -83,9 +85,12 @@ class WithdrawalView(APIView):
     @jwt_auth
     def delete(self, request):
         userId = request.data.get('userId')
+        password = request.data.get('password')
         user = User.objects.filter(userId=userId).first()
-        if user:
-            user.delete()
-            return Response({'message': '회원탈퇴 성공'}, status=status.HTTP_200_OK)
-        else:
+        if not user:
             return Response({'message': '회원탈퇴 실패'}, status=status.HTTP_404_NOT_FOUND)
+        if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+            return Response({'message': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
+        # JWT Payload 생성
+        user.delete()
+        return Response({'message': '회원탈퇴 성공'}, status=status.HTTP_200_OK)

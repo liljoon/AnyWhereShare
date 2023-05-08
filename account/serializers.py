@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from django.core.exceptions import ValidationError
+import bcrypt
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -22,11 +23,12 @@ class UserLoginSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        password = bcrypt.hashpw(validated_data['password'].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         user = User.objects.create(
             userId=validated_data['userId'],
             username=validated_data['username'],
             email=validated_data['email'],
-            password=validated_data['password'],
+            password=password,
             accountType='RE',
         )
         return user

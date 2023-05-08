@@ -1,5 +1,4 @@
 from django.db import models
-import bcrypt
 
 
 class User(models.Model):
@@ -14,12 +13,3 @@ class User(models.Model):
     accountType = models.CharField(max_length=2, choices=accountTypes, default='RE')
     url = models.URLField(null=True)
     expirationTime = models.IntegerField(null=True)
-
-    def __str__(self):
-        return self.username
-
-    def set_password(self, raw_password):
-        self.password = bcrypt.hashpw(raw_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-    def check_password(self, raw_password):
-        return bcrypt.checkpw(raw_password.encode('utf-8'), self.password.encode('utf-8'))
