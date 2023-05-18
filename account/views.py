@@ -33,11 +33,11 @@ class ListAccountsView(APIView):
 
 class DuplicateView(APIView):
     def get(self, request):
-        userId = request.data.get('userId')
-        if User.objects.filter(userId=userId).exists():
-            return Response({'isDuplicated': True}, status=status.HTTP_200_OK)
+        user_id = request.data.get('user_id')
+        if User.objects.filter(user_id=user_id).exists():
+            return Response({'is_duplicated': True}, status=status.HTTP_200_OK)
         else:
-            return Response({'isDuplicated': False}, status=status.HTTP_200_OK)
+            return Response({'is_duplicated': False}, status=status.HTTP_200_OK)
 
 
 class SignupView(APIView):
@@ -51,16 +51,16 @@ class SignupView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        userId = request.data.get('userId')
+        user_id = request.data.get('user_id')
         password = request.data.get('password')
-        user = User.objects.filter(userId=userId).first()
+        user = User.objects.filter(user_id=user_id).first()
         if not user:
             return Response({'message': '로그인 실패'}, status=status.HTTP_401_UNAUTHORIZED)
         if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
             return Response({'message': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
         # JWT Payload 생성
         payload = {
-            'userId': user.userId,
+            'user_id': user.user_id,
             'exp': datetime.utcnow() + timedelta(minutes=30),  # 30분 뒤 만료
         }
 
@@ -84,9 +84,9 @@ class LogoutView(APIView):
 class WithdrawalView(APIView):
     @jwt_auth
     def delete(self, request):
-        userId = request.data.get('userId')
+        user_id = request.data.get('user_id')
         password = request.data.get('password')
-        user = User.objects.filter(userId=userId).first()
+        user = User.objects.filter(user_id=user_id).first()
         if not user:
             return Response({'message': '회원탈퇴 실패'}, status=status.HTTP_404_NOT_FOUND)
         if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
