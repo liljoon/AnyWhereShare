@@ -26,7 +26,9 @@ with open('secrets.json') as f:
     secrets = json.load(f)
 
 SECRET_KEY = secrets['SECRET_KEY']
-
+S3_ACCESS_KEY = secrets['S3_ACCESS_KEY']
+S3_ACCESS_SECRET_KEY= secrets['S3_ACCESS_SECRET_KEY']
+S3_BUCKET_NAME= secrets['S3_BUCKET_NAME']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

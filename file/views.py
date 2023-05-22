@@ -1,5 +1,7 @@
 from django.shortcuts import render
 import boto3
+from config import settings
+
 
 def s3_connection():
     try:
@@ -7,8 +9,8 @@ def s3_connection():
         s3 = boto3.client(
             service_name="s3",
             region_name="ap-northeast-2",
-            aws_access_key_id=ACCESS_KEY_ID,
-            aws_secret_access_key=ACCESS_SECRET_KEY,
+            aws_access_key_id=settings.S3_ACCESS_KEY,
+            aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY,
         )
     except Exception as e:
         print(e)
@@ -18,7 +20,7 @@ def s3_connection():
 
 
 def get_list(prefix):
-    response = s3.list_objects(Bucket=BUCKET_NAME, Prefix=prefix)
+    response = s3.list_objects(Bucket=settings.S3_BUCKET_NAME, Prefix=prefix)
     contents_list = response['Contents']
     file_list = []
     for content in contents_list:
@@ -35,6 +37,6 @@ if __name__ == "__main__":
     try:
         get_list('bigtog/')
         # s3.download_file(BUCKET_NAME, "test.txt", './help.txt')
-        s3.put_object(Bucket=BUCKET_NAME, Key="bigtog/test")
+        s3.put_object(Bucket=settings.S3_BUCKET_NAME, Key="bigtog/test")
     except Exception as e:
         print(e)
