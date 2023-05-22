@@ -1,5 +1,5 @@
 from django.db import models
-
+import account.models as account
 
 class Resource(models.Model):
     resourceTypes = [
@@ -17,11 +17,11 @@ class Resource(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     size = models.IntegerField()
-    user_account_id = models.ForeignKey('account', on_delete=models.CASCADE)
+    user_account_id = models.ForeignKey(account.User, on_delete=models.CASCADE)
 
 
 class Url(models.Model):
     url_id = models.AutoField(primary_key=True)
-    resource_id = models.ForeignKey('Resource', on_delete=models.CASCADE)
+    resource_id = models.ForeignKey(Resource, on_delete=models.CASCADE)
     url = models.TextField()
     expiration_time = models.DateTimeField()

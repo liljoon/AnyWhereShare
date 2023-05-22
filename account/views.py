@@ -30,6 +30,20 @@ class ListAccountsView(APIView):
         serializer = UserDetailSerializer(users, many=True)
         return Response(serializer.data)
 
+        file_serializer = FileSerializer(data=request.data)
+        if file_serializer.is_valid():
+            file_serializer.save()
+            # upload to s3
+            file_path = '.' + file_serializer.data.get('file')
+            user = request.user
+            data = s3_interface.upload_file(s3_interface.BUCKET, user.username, file_path, path+file_path.split('/')[-1])
+            if os.path.exists(file_path):
+                os.remove(file_path)
+            return Response(file_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(file_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DuplicateView(APIView):
     def get(self, request):

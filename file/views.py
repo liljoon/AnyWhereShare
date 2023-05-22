@@ -1,42 +1,80 @@
-from django.shortcuts import render
-import boto3
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from file.models import Resource
+from account import views
 from config import settings
+import jwt
+import boto3
 
 
-def s3_connection():
+def get_user_id(token):
     try:
-        # s3 클라이언트 생성
-        s3 = boto3.client(
-            service_name="s3",
-            region_name="ap-northeast-2",
-            aws_access_key_id=settings.S3_ACCESS_KEY,
-            aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY,
-        )
-    except Exception as e:
-        print(e)
-    else:
-        print("s3 bucket connected!")
-        return s3
+        decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+        user_id = decoded_token.get('user_id')
+        return user_id
+    except jwt.ExpiredSignatureError:
+        # 토큰이 만료되었을 경우 처리 로직
+        return Response({'error': '만료된 토큰'}, status=status.HTTP_401_UNAUTHORIZED)
+    except jwt.InvalidTokenError:
+        # 유효하지 않은 토큰일 경우 처리 로직
+        return Response({'error': '유효하지 않은 토큰'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-def get_list(prefix):
-    response = s3.list_objects(Bucket=settings.S3_BUCKET_NAME, Prefix=prefix)
-    contents_list = response['Contents']
-    file_list = []
-    for content in contents_list:
-        key = content['Key']
-        size = content['Size']
-        file_list.append((key, size))
-    # 파일명 출력
-    for file in file_list:
-        print(file)
+class UploadView(APIView):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY
+    )
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
 
+        file = request.FILES.get('file')
+        path = request.data.get('path')
+        if file:
+            try:
+                # 파일을 s3에 업로드
+                self.s3_client.upload_fileobj(
+                    file,
+                    settings.S3_BUCKET_NAME,
+                    user_id + path + "/" + file.name,
+                )
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-if __name__ == "__main__":
-    s3 = s3_connection()
-    try:
-        get_list('bigtog/')
-        # s3.download_file(BUCKET_NAME, "test.txt", './help.txt')
-        s3.put_object(Bucket=settings.S3_BUCKET_NAME, Key="bigtog/test")
-    except Exception as e:
-        print(e)
+            return Response({'message': 'File uploaded successfully'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)
+
+class DownloadView(APIView):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY
+    )
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+
+        file = request.FILES.get('file')
+        path = request.data.get('path')
+        if file:
+            try:
+                # 파일명만으로 업로드하면 파일명이 동일할 때 덮어쓰기 될 수 있으므로 uuid를 사용해 이름을 지정한다
+                filename = str(uuid.uuid1()).replace('-', '')
+                # 파일을 s3에 업로드
+                self.s3_client.upload_fileobj(
+                    file,
+                    settings.S3_BUCKET_NAME,
+                    user_id + path + "/" + file.name,
+            )
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({'message': 'File uploaded successfully'}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({'message': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)

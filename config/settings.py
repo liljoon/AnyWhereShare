@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     # 추가한 앱
     'account',
+    'file',
 ]
 
 MIDDLEWARE = [
