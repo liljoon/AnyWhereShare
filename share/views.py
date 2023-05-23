@@ -9,6 +9,7 @@ from rest_framework import viewsets
 from rest_framework.permissions import *
 from rest_framework.views      import APIView
 from rest_framework.response      import Response
+from rest_framework import status
 
 
 # Create your views here.
@@ -53,9 +54,9 @@ class sharingAPIView(APIView):
 		elif code:
 			qs = sharing.objects.filter(code=code)
 			if len(qs) == 0: # 없는 코드일 경우
-				return Response(404)
+				return Response(status=status.HTTP_204_NO_CONTENT)
 		else:
-			return Response(404)
+			return Response(status=status.HTTP_404_NOT_FOUND)
 		if len(qs) == 0: # 이미 만들어진 링크가 없다면 생성
 			# bitly 인증
 			headers = {
