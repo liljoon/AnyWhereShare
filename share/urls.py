@@ -8,5 +8,5 @@ from . import views
 urlpatterns = [
 	#path('', views.showShareLink.as_view(), name='showShareLink'),
 	#path('', include(router.urls)),
-	path('test/', views.sharingAPIView.as_view())
+	path('', views.sharingAPIView.as_view())
 ]
