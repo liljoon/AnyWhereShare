@@ -128,7 +128,7 @@ class DownloadView(APIView):
         path = request.data.get('path')
 
         if not path:
-            return Response({'error': 'path 파라미터가 반드시 존재해야함'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
         file_path = user_id + "/" + path
         print(file_path)
@@ -161,3 +161,95 @@ class DownloadView(APIView):
             return file
         except ClientError as e:
             return None
+
+
+class DeleteView(APIView):
+    @views.jwt_auth
+    def delete(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        path = request.data.get('path')
+
+        if not path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Find the resource with the given path
+        resource = Resource.objects.filter(path=path, user_account_id=user_id).first()
+
+        if not resource:
+            return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Soft delete the resource and all its sub-resources
+        self._soft_delete_resource(resource)
+
+        return Response({'message': '파일 삭제 성공'}, status=status.HTTP_200_OK)
+
+    def _soft_delete_resource(self, resource):
+        # Soft delete the resource by setting is_valid to 0
+        resource.is_valid = 0
+        resource.save()
+
+        # Soft delete all the sub-resources recursively
+        sub_resources = Resource.objects.filter(parent_resource_id=resource.id)
+        for sub_resource in sub_resources:
+            self._soft_delete_resource(sub_resource)
+
+
+class ListFilesView(APIView):
+    @views.jwt_auth
+    def get(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        path = request.data.get('path')
+
+        if not path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Find the resource with the given path and user_id
+        resource = Resource.objects.filter(path=path, is_valid=1, user_account_id=user_id).first()
+
+        if not resource:
+            return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get all the sub-resources recursively
+        sub_resources = self._get_sub_resources(resource)
+
+        # Serialize the resources to JSON list
+        serialized_data = self._serialize_resources(sub_resources)
+
+        return Response(serialized_data, status=status.HTTP_200_OK)
+
+    def _get_sub_resources(self, resource):
+        # Get all the sub-resources recursively
+        sub_resources = []
+        self._get_sub_resources_recursive(resource, sub_resources)
+        return sub_resources
+
+    def _get_sub_resources_recursive(self, resource, sub_resources):
+        # Add the resource to the sub-resources list if it is valid
+        if resource.is_valid:
+            sub_resources.append(resource)
+
+        # Get the sub-resources recursively
+        sub_resources_queryset = Resource.objects.filter(parent_resource_id=resource.id)
+        for sub_resource in sub_resources_queryset:
+            self._get_sub_resources_recursive(sub_resource, sub_resources)
+
+    def _serialize_resources(self, resources):
+        # Serialize the resources to JSON list
+        serialized_data = []
+        for resource in resources:
+            serialized_data.append({
+                'resource_id': resource.id,
+                'resource_name': resource.resource_name,
+                'resource_type': resource.resource_type,
+                'suffix_name': resource.suffix_name,
+                'path': resource.path,
+                'is_bookmark': resource.is_bookmark,
+                'is_valid': resource.is_valid,
+                'created_at': resource.created_at,
+                'modified_at': resource.modified_at,
+                'size': resource.size,
+                'user_account_id': resource.user_account_id.user_id,
+            })
+        return serialized_data
