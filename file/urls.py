@@ -5,7 +5,7 @@ from file import views
 urlpatterns = [
     # path('list/<path>', views.ListFilesView.as_view()),
     path('upload/', views.UploadView.as_view()),
-    # path('download/<int:pk>', views.DownloadView.as_view()),
+    path('download/', views.DownloadView.as_view()),
     # path('delete/<int:pk>', views.DeleteView.as_view()),
     # path('modify/<int:pk>', views.ModifyView.as_view()),
     # path('info/<int:pk>', views.InfoView.as_view()),

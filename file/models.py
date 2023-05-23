@@ -1,6 +1,7 @@
 from django.db import models
 import account.models as account
 
+
 class Resource(models.Model):
     resourceTypes = [
         ('F', 'file'),
@@ -12,8 +13,8 @@ class Resource(models.Model):
     resource_type = models.CharField(max_length=1, choices=resourceTypes)
     suffix_name = models.CharField(max_length=10)
     path = models.TextField()
-    is_bookmark = models.BooleanField()
-    is_valid = models.BooleanField() #true -> valid, false -> soft delete 상태
+    is_bookmark = models.IntegerField(default=0)
+    is_valid = models.IntegerField(default=0)  # true -> valid, false -> soft delete 상태
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     size = models.IntegerField()

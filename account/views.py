@@ -69,9 +69,9 @@ class LoginView(APIView):
         password = request.data.get('password')
         user = User.objects.filter(user_id=user_id).first()
         if not user:
-            return Response({'message': '로그인 실패'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': '로그인 실패'}, status=status.HTTP_401_UNAUTHORIZED)
         if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            return Response({'message': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
         # JWT Payload 생성
         payload = {
             'user_id': user.user_id,
@@ -92,7 +92,7 @@ class LogoutView(APIView):
             response.delete_cookie('Authorization')
             return response
         except Exception as e:
-            return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class WithdrawalView(APIView):
@@ -102,9 +102,9 @@ class WithdrawalView(APIView):
         password = request.data.get('password')
         user = User.objects.filter(user_id=user_id).first()
         if not user:
-            return Response({'message': '회원탈퇴 실패'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': '회원탈퇴 실패'}, status=status.HTTP_404_NOT_FOUND)
         if not bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
-            return Response({'message': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': '비밀번호 오류'}, status=status.HTTP_401_UNAUTHORIZED)
         # JWT Payload 생성
         user.delete()
         return Response({'message': '회원탈퇴 성공'}, status=status.HTTP_200_OK)
