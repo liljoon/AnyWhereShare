@@ -3,13 +3,14 @@ from rest_framework.response import Response
 from django.http import FileResponse
 from rest_framework import status
 from file.models import Resource
+from file.serializers import ResourceSerializer
 from account.models import User
 from account import views
 from config import settings
 from datetime import datetime
+from botocore.exceptions import ClientError
 import jwt
 import boto3
-from botocore.exceptions import ClientError
 import os
 
 
@@ -154,10 +155,10 @@ class DownloadView(APIView):
 
         file_path = user_id + "/" + path
         print(file_path)
-        if not self.s3_file_exists(file_path):
+        if not self._s3_file_exists(file_path):
             return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
 
-        file = self.s3_download_file(file_path)
+        file = self._s3_download_file(file_path)
         if not file:
             return Response({'error': '다운로드 실패'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -166,7 +167,7 @@ class DownloadView(APIView):
         response['Content-Disposition'] = 'attachment; filename="{}"'.format(filename)
         return response
 
-    def s3_file_exists(self, file_path):
+    def _s3_file_exists(self, file_path):
         try:
             self.s3_client.head_object(Bucket=settings.S3_BUCKET_NAME, Key=file_path)
             return True
@@ -176,13 +177,13 @@ class DownloadView(APIView):
             else:
                 raise
 
-    def s3_download_file(self, file_path):
+    def _s3_download_file(self, file_path):
         try:
             response = self.s3_client.get_object(Bucket=settings.S3_BUCKET_NAME, Key=file_path)
             file = response['Body']
             return file
         except ClientError as e:
-            return None
+            return Response({'error': '다운로드 실패'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class DeleteView(APIView):
@@ -231,6 +232,7 @@ class DeleteView(APIView):
         file_name = file_name.split('.')[0] if extension else file_name
         return directory, file_name, extension
 
+
 class ListFilesView(APIView):
     @views.jwt_auth
     def get(self, request):
@@ -240,52 +242,51 @@ class ListFilesView(APIView):
 
         if not path:
             return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+        elif path == '/':
+            resources = Resource.objects.filter(path='', user_account_id=user_id)
+        else:
+            resources = Resource.objects.filter(path=path, user_account_id=user_id)
 
-        # Find the resource with the given path and user_id
-        resource = Resource.objects.filter(path=path, is_valid=1, user_account_id=user_id).first()
-
-        if not resource:
+        if not resources:
             return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Get all the sub-resources recursively
-        sub_resources = self._get_sub_resources(resource)
+        serializer = ResourceSerializer(resources, many=True)
+        data = serializer.data
 
-        # Serialize the resources to JSON list
-        serialized_data = self._serialize_resources(sub_resources)
+        return Response(data, status=status.HTTP_200_OK)
 
-        return Response(serialized_data, status=status.HTTP_200_OK)
 
-    def _get_sub_resources(self, resource):
-        # Get all the sub-resources recursively
-        sub_resources = []
-        self._get_sub_resources_recursive(resource, sub_resources)
-        return sub_resources
+class SearchView(APIView):
+    @views.jwt_auth
+    def get(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        file_name = request.data.get('file_name')
 
-    def _get_sub_resources_recursive(self, resource, sub_resources):
-        # Add the resource to the sub-resources list if it is valid
-        if resource.is_valid:
-            sub_resources.append(resource)
+        if not file_name:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Get the sub-resources recursively
-        sub_resources_queryset = Resource.objects.filter(parent_resource_id=resource.id)
-        for sub_resource in sub_resources_queryset:
-            self._get_sub_resources_recursive(sub_resource, sub_resources)
+        resources = Resource.objects.filter(resource_name__icontains=file_name, user_account_id=user_id)
 
-    def _serialize_resources(self, resources):
-        # Serialize the resources to JSON list
-        serialized_data = []
-        for resource in resources:
-            serialized_data.append({
-                'resource_id': resource.id,
-                'resource_name': resource.resource_name,
-                'resource_type': resource.resource_type,
-                'suffix_name': resource.suffix_name,
-                'path': resource.path,
-                'is_bookmark': resource.is_bookmark,
-                'is_valid': resource.is_valid,
-                'created_at': resource.created_at,
-                'modified_at': resource.modified_at,
-                'size': resource.size,
-                'user_account_id': resource.user_account_id.user_id,
-            })
-        return serialized_data
+        serializer = ResourceSerializer(resources, many=True)
+        data = serializer.data
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class InfoView(APIView):
+    @views.jwt_auth
+    def get(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        path = request.data.get('path')
+
+        if not path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+
+        resource = Resource.objects.filter(path=path, user_account_id=user_id).first()
+
+        serializer = ResourceSerializer(resource)
+        data = serializer.data
+
+        return Response(data, status=status.HTTP_200_OK)

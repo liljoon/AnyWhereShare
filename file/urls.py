@@ -7,6 +7,8 @@ urlpatterns = [
     path('upload/', views.UploadView.as_view()),
     path('download/', views.DownloadView.as_view()),
     path('delete/', views.DeleteView.as_view()),
+    path('search/', views.SearchView.as_view()),
+    path('info/', views.InfoView.as_view()),
     # path('modify/<int:pk>', views.ModifyView.as_view()),
     # path('info/<int:pk>', views.InfoView.as_view()),
     # path('lock/<int:pk>', views.LockView.as_view()),
