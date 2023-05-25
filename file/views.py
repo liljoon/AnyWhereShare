@@ -283,10 +283,26 @@ class InfoView(APIView):
 
         if not path:
             return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+        directory, file_name, extension = self._split_path(path)
+        resource = Resource.objects.filter(path=directory, resource_name=file_name, suffix_name=extension,
+                                           user_account_id=user_id, is_valid=1).first()
 
-        resource = Resource.objects.filter(path=path, user_account_id=user_id).first()
+        if not resource:
+            return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = ResourceSerializer(resource)
         data = serializer.data
 
         return Response(data, status=status.HTTP_200_OK)
+
+    def _split_path(self, path):
+        # path = "a/" -> directory="", file_name="a", extension=""
+        # path = "a/b/c/test.txt" -> directory="a/b/c/", file_name="test", extension=".txt"
+        # path = "test.txt" -> directory="", file_name"test", extension=".txt"
+        parts = path.rstrip('/').split('/')
+        directory = '/'.join(parts[:-1]) + '/' if len(parts) > 1 else ''
+        file_name = parts[-1] if parts else ''
+        extension = '.' + file_name.split('.')[-1] if '.' in file_name else ''
+        file_name = file_name.split('.')[0] if extension else file_name
+        return directory, file_name, extension
+
