@@ -63,7 +63,7 @@ INSTALLED_APPS = [
     'webpage',
     'accounts',
     'share',
-
+	'guestmode'
 ]
 
 MIDDLEWARE = [
