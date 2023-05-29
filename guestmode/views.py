@@ -21,13 +21,12 @@ class Generating(APIView):
 		new_user = GuestUser(passwd=generate_passwd())
 		new_user.save()
 		serial = GuestUserSerializer(new_user)
-		print(new_user.passwd)
 		return Response(serial.data)
 
 class ListFilesView(APIView):
 	permission_classes = [IsAuthenticatedOrReadOnly]
 	def get(self, request):
-		passwd = request.data.get('passwd')
+		passwd = request.COOKIES.get('passwd')
 		try:
 			user = GuestUser.objects.get(passwd=passwd)
 			file_list = FileInfo.objects.filter(owner=user)
@@ -44,7 +43,7 @@ class Upload(APIView):
 	permission_classes = [AllowAny]
 	def post(self, request):
 		file = request.FILES.get('file')
-		passwd = request.data.get('passwd')
+		passwd = request.COOKIES.get('passwd')
 		try:
 			user = GuestUser.objects.get(passwd=passwd)
 			uploadFile(file, passwd)
@@ -56,7 +55,3 @@ class Upload(APIView):
 		except:
 			return Response({'error': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)
 
-class Download(APIView):
-	permission_classes = [IsAuthenticatedOrReadOnly]
-	def get(self, request):
-		pass
