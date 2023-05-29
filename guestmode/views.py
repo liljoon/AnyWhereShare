@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import GuestUser, FileInfo
-from .serializers import GuestUserSerializer
+from .serializers import GuestUserSerializer, FilesListSerializer
 from rest_framework.permissions import *
 from rest_framework import status
 # Create your views here.
@@ -24,6 +24,20 @@ class Generating(APIView):
 		print(new_user.passwd)
 		return Response(serial.data)
 
+class ListFilesView(APIView):
+	permission_classes = [IsAuthenticatedOrReadOnly]
+	def get(self, request):
+		passwd = request.data.get('passwd')
+		try:
+			user = GuestUser.objects.get(passwd=passwd)
+			file_list = FileInfo.objects.filter(owner=user)
+			serial = FilesListSerializer(file_list, many=True)
+			return Response(serial.data, status=status.HTTP_200_OK)
+
+		except:
+			return Response({'error': '일치하는 유저 없음'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 from .s3_utils import uploadFile, generateDownloadUrl
 
 class Upload(APIView):
@@ -41,3 +55,8 @@ class Upload(APIView):
 
 		except:
 			return Response({'error': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)
+
+class Download(APIView):
+	permission_classes = [IsAuthenticatedOrReadOnly]
+	def get(self, request):
+		pass
