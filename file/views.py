@@ -27,6 +27,18 @@ def get_user_id(token):
         return Response({'error': '유효하지 않은 토큰'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+def split_path(path):
+    # path = "a/" -> directory="", file_name="a", extension=""
+    # path = "a/b/c/test.txt" -> directory="a/b/c/", file_name="test", extension=".txt"
+    # path = "test.txt" -> directory="", file_name"test", extension=".txt"
+    parts = path.rstrip('/').split('/')
+    directory = '/'.join(parts[:-1]) + '/' if len(parts) > 1 else ''
+    file_name = parts[-1] if parts else ''
+    extension = '.' + file_name.split('.')[-1] if '.' in file_name else ''
+    file_name = file_name.split('.')[0] if extension else file_name
+    return directory, file_name, extension
+
+
 class UploadView(APIView):
     s3_client = boto3.client(
         's3',
@@ -197,7 +209,7 @@ class DeleteView(APIView):
             return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Split the path into directory, file name, and extension
-        directory, file_name, extension = self._split_path(path)
+        directory, file_name, extension = split_path(path)
         print(directory, file_name, extension)
         # Find the resource with the given path
         resource = Resource.objects.filter(path=directory,resource_name=file_name, suffix_name=extension,
@@ -220,17 +232,6 @@ class DeleteView(APIView):
         sub_resources = Resource.objects.filter(parent_resource_id=resource.resource_id)
         for sub_resource in sub_resources:
             self._soft_delete_resource(sub_resource)
-
-    def _split_path(self, path):
-        # path = "a/" -> directory="", file_name="a", extension=""
-        # path = "a/b/c/test.txt" -> directory="a/b/c/", file_name="test", extension=".txt"
-        # path = "test.txt" -> directory="", file_name"test", extension=".txt"
-        parts = path.rstrip('/').split('/')
-        directory = '/'.join(parts[:-1]) + '/' if len(parts) > 1 else ''
-        file_name = parts[-1] if parts else ''
-        extension = '.' + file_name.split('.')[-1] if '.' in file_name else ''
-        file_name = file_name.split('.')[0] if extension else file_name
-        return directory, file_name, extension
 
 
 class ListFilesView(APIView):
@@ -283,7 +284,7 @@ class InfoView(APIView):
 
         if not path:
             return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
-        directory, file_name, extension = self._split_path(path)
+        directory, file_name, extension = split_path(path)
         resource = Resource.objects.filter(path=directory, resource_name=file_name, suffix_name=extension,
                                            user_account_id=user_id, is_valid=1).first()
 
@@ -295,14 +296,86 @@ class InfoView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-    def _split_path(self, path):
-        # path = "a/" -> directory="", file_name="a", extension=""
-        # path = "a/b/c/test.txt" -> directory="a/b/c/", file_name="test", extension=".txt"
-        # path = "test.txt" -> directory="", file_name"test", extension=".txt"
-        parts = path.rstrip('/').split('/')
-        directory = '/'.join(parts[:-1]) + '/' if len(parts) > 1 else ''
-        file_name = parts[-1] if parts else ''
-        extension = '.' + file_name.split('.')[-1] if '.' in file_name else ''
-        file_name = file_name.split('.')[0] if extension else file_name
-        return directory, file_name, extension
 
+class ModifyView(APIView):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY
+    )
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        path = request.data.get('path')
+        new_name = request.data.get('new_name')
+        new_path = request.data.get('new_path')
+
+        if not path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+        if not new_name and not new_path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+        elif new_name and not new_path:
+            directory, file_name, extension = split_path(path)
+            resource = Resource.objects.filter(path=directory, resource_name=file_name, suffix_name=extension,
+                                               user_account_id=user_id, is_valid=1).first()
+            if not resource:
+                return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+            resource.resource_name = new_name.split('.')[0]
+            resource.suffix_name = extension
+            resource.modified_at = datetime.now()
+            resource.save()
+
+            try:
+                self.s3_client.copy_object(
+                    Bucket=settings.S3_BUCKET_NAME,
+                    CopySource={
+                        'Bucket': settings.S3_BUCKET_NAME,
+                        'Key': f'{user_id}/{path}'
+                    },
+                    Key=f'{user_id}/{directory}{new_name}'
+                )
+                self.s3_client.delete_object(
+                    Bucket=settings.S3_BUCKET_NAME,
+                    Key=f'{user_id}/{path}'
+                )
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({'message': '파일 이름변경 성공'}, status=status.HTTP_200_OK)
+        elif not new_name and new_path:
+            directory, file_name, extension = split_path(path)
+            resource = Resource.objects.filter(path=directory, resource_name=file_name, suffix_name=extension,
+                                               user_account_id=user_id, is_valid=1).first()
+            if not resource:
+                return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+            parent_directory, parent_file_name, _ = split_path(new_path)
+            parent_resource = Resource.objects.filter(path=parent_directory, resource_name=parent_file_name,
+                                                      resource_type='D', user_account_id=user_id, is_valid=1).first()
+            if not parent_resource: # 옮길 위치가 존재하지 않는 폴더일때
+                return Response({'error': '해당 폴더는 존재하지 않습니다.'}, status=status.HTTP_404_NOT_FOUND)
+
+            resource.path = new_path
+            resource.parent_resource_id = parent_resource
+            resource.modified_at = datetime.now()
+            resource.save()
+
+            try:
+                self.s3_client.copy_object(
+                    Bucket=settings.S3_BUCKET_NAME,
+                    CopySource={
+                        'Bucket': settings.S3_BUCKET_NAME,
+                        'Key': f'{user_id}/{path}'
+                    },
+                    Key=f'{user_id}/{new_path}{resource.resource_name}{resource.suffix_name}'
+                )
+                self.s3_client.delete_object(
+                    Bucket=settings.S3_BUCKET_NAME,
+                    Key=f'{user_id}/{path}'
+                )
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            return Response({'message': '파일 이동 성공'}, status=status.HTTP_200_OK)
