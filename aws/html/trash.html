@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trash - AnyWhereShare</title>
+    <link rel="stylesheet" href="../css/trash.css">
+     <!--web font-->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <logo>
+            <img src="../img/logo.png" style="width:60px; height:60px;" title="logo">
+        </logo>
+        <home>
+            <h1 style="opacity:0.7;">AnyWhereShare</h1>
+        </home>
+        <help>
+            <a href="./help.html" style="color:#87C6CB; ">Help</a>
+        </help>
+    </header>
+    <div class="wrap">
+        <div class="left_bar">
+            <nav>
+                <ul class="menu">
+                    <li><a href="#user_mode">ALL FILE</a></li>
+                    <li><a href="./trash.html">TRASH</a></li>
+                </ul>
+                <div class="dummy"></div>
+                <ul class="user">
+                    <li>
+                        <a href="/user_set">
+                            <img src="../img/setting.png" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="user_set">
+                            test01님
+                        </a>
+                    </li>
+                    <li>
+                        <a href="./main.html">
+                            <img src="../img/logout.png" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="logout">
+                            LOGOUT
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main">
+            
+            <div class="show">
+                <div class="trash">
+                    <img src="../img/trash.png" style="width:300px; height:300px;" title="trash">
+                </div>
+                    
+            </div>
+            <div class="detailed">
+                <div class="tl">
+                    <div class="name">
+                        <span>py_django_project</span>
+                    </div>
+                    <div class="pre">
+                        <span>미리보기</span>
+                    </div>
+                </div>
+                <!--파일미리보기-->
+                <div class="mc">
+                    <img src="../img/file.png" style="width:400px; height:400px;">
+                </div>
+                <div class="r_detail">
+                    <div class="i1">
+                        <div class="i1-1"><p>파일형식</p></div>
+                        <div class="i1-2"><p>.ppt</p></div>
+                    </div>
+                    <div class="i2">
+                        <div class="i2-1"><p>크기</p></div>
+                        <div class="i2-2"><p>2.18KB</p></div>
+                    </div>
+                    <div class="i3">
+                        <div class="i3-1"><p>업로드 날짜</p></div>
+                        <div class="i3-2"><p>2023-05-05 오후 9:09</p></div>
+                    </div>
+                    <div class="i4">
+                        <div class="i4-1"><p>삭제 날짜</p></div>
+                        <div class="i4-2"><p>2023-05-08 오후 12:34</p></div>
+                    </div>
+                </div>
+                <div class="btn-share">
+                    <div class="lk">
+                        <button type="submit" class="perDEL" onclick="perDEL()">PERMANENTLY DELETE</button>
+                    </div>
+                    <div class="qq">
+                        <button type="submit" class="restore" onclick="restore()">RESTORE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>
