@@ -111,6 +111,7 @@ DATABASES = {
         'PORT': 3306,
         'USER': 'aw_user', #username
         'PASSWORD': 'ab12345!',
+        'OPTIONS':{'charset':'utf8mb4'},
     }
 }
 
