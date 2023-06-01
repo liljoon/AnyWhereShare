@@ -7,6 +7,7 @@ class AwAccount(models.Model):
     email = models.CharField(max_length=50, blank=True, null=True)
     account_type = models.CharField(max_length=20, blank=True, null=True)
     expiration_time = models.DateTimeField(blank=True, null=True)
+    token = models.CharField(max_length=200, blank=True, null=True)
     url = models.CharField(max_length=300, blank=True, null=True)
     remark = models.CharField(max_length=100, blank=True, null=True)
     valid = models.CharField(max_length=1, blank=True, null=True)
