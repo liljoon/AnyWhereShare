@@ -7,6 +7,8 @@ from .s3_utils import deleteAllFiles
 # 생성된지 10분 지난 GuestUser 자동삭제
 def expireGuestUser():
 	users = GuestUser.objects.filter(create_at__lt = timezone.now() - datetime.timedelta(minutes=10))
+	if len(users) == 0:
+		return
 	for i in users:
 		deleteAllFiles(i.passwd)
 	print("Log : GuestUser Expired : " ,users.delete())
