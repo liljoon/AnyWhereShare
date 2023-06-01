@@ -2,15 +2,14 @@ import boto3
 from config.settings import get_secret
 
 servicename = 's3'
-region_name = get_secret("S3_REGION_NAME")
 access_key = get_secret("S3_ACCESS_KEY")
 secret_key = get_secret("S3_ACCESS_SECRET_KEY")
 bucket_name= get_secret("S3_BUCKET_NAME")
 
-s3 = boto3.client(servicename, region_name=region_name,\
+s3 = boto3.client(servicename, \
                   aws_access_key_id=access_key, aws_secret_access_key=secret_key)
 
-s3_resource = boto3.resource(servicename, region_name=region_name,\
+s3_resource = boto3.resource(servicename, \
                   aws_access_key_id=access_key, aws_secret_access_key=secret_key)
 bucket = s3_resource.Bucket(bucket_name)
 
