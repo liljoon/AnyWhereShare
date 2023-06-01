@@ -16,10 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-import account
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('account.urls')),
+    path('share/', include('share.urls')),
+    path('guest/', include('guestmode.urls')),
     path('files/', include('file.urls')),
 ]
