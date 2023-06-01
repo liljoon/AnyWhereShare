@@ -72,17 +72,10 @@ cover/
 # Translations
 *.mo
 
-# Django stuff:
-
 # Translations
 *.mo
-*.pot
 
 # Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -134,7 +127,6 @@ ipython_config.py
 .pdm.toml
 
 # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
 __pypackages__/
 
 # Celery stuff
