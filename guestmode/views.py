@@ -36,6 +36,17 @@ class ListFilesView(APIView):
 		except:
 			return Response({'error': '일치하는 유저 없음'}, status=status.HTTP_400_BAD_REQUEST)
 
+class LoginView(APIView):
+	permission_classes = [AllowAny]
+	def post(self, request):
+		passwd = request.data.get('passwd')
+		try:
+			user = GuestUser.objects.get(passwd=passwd)
+			return Response({'error': '로그인 성공!'}, status=status.HTTP_200_OK)
+
+		except:
+			return Response({'error': '일치하는 유저 없음'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 from .s3_utils import uploadFile, generateDownloadUrl
 
