@@ -24,9 +24,9 @@ class Generating(APIView):
 		return Response(serial.data)
 
 class ListFilesView(APIView):
-	permission_classes = [IsAuthenticatedOrReadOnly]
-	def get(self, request):
-		passwd = request.COOKIES.get('passwd')
+	permission_classes = [AllowAny]
+	def post(self, request):
+		passwd = request.data.get('passwd')
 		try:
 			user = GuestUser.objects.get(passwd=passwd)
 			file_list = FileInfo.objects.filter(owner=user)
