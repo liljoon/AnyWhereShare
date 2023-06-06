@@ -1,46 +1,48 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main - AnyWhereShare</title>
-    <link rel="stylesheet" href="../css/main.css">
+    
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?after">
     <!--web font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
 </head>
+
 <body>
-    <header href="./main.html">
+    <header href="">
         <logo>
-            <a href = "./main.html"> <img src="../img/logo.png" style="width:80px; height:80px;" title="logo"></a>
+            <a href = ""> <img src="{% static 'img/logo.png' %}" style="width:80px; height:80px;" title="logo"></a>
         </logo>
         <home>
-            <a href = "./main.html" style="color:#1F3C4D; text-decoration: none;"><h1 href = "./main.html" style="opacity:0.7;">AnyWhereShare</h1></a>
+            <a href = "" style="color:#1F3C4D; text-decoration: none;"><h1 href = "./main.html" style="opacity:0.7;">AnyWhereShare</h1></a>
         </home>
     </header>
     <div class="wrap">
         <div class="account">
             <div class="connect">
                 <div class="login">
-                    <a href = "./login.html" style="text-decoration: none;">
-                        <button class="login_btn" type="button">
-                            Log in
-                        </button>
-                    </a>
+                    <button id="logIn" class="login_btn" type="button">
+                        Log in
+                     </button>
                 </div>
                 <div class="guest">
-                    <button class="guest_btn" type="button">
+                    <button id="guestMode" class="guest_btn" type="button">
                         Guest
                     </button>
                 </div>
             </div>
             <div class="create">
-                <button class="create_btn" type="button">
+                <button id="createAccount" class="create_btn" type="button">
                     Create Account
                 </button>
             </div>
         </div>
     </div>
+    <script src="{% static 'js/main.js' %}"></script>
 </body>
 </html>
