@@ -21,7 +21,7 @@ def generateDownloadUrl(file, owner_passwd):
 	url = s3.generate_presigned_url(
 		ClientMethod='get_object',
 		Params={'Bucket': bucket_name, 'Key': f'{owner_passwd}/{file.name}'},
-		ExpiresIn=600 # 10minute
+		ExpiresIn=60 * 60 * 24 # 10minute
 		)
 	return url
 
