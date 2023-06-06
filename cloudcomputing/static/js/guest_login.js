@@ -30,6 +30,7 @@ function generate_guest()
 		.then(res => res.json())
 		.then(data => {
 			document.cookie = `passwd=${data.passwd}; path=/`;
+			alert(`생성 완료!\n Code : ${data.passwd}`);
 			window.location.href="http://" + location.host+"/guest_mode"; // generate 후에 파일 저장 페이지
 		}) //passwd 쿠키저장
 }
