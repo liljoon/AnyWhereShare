@@ -5,12 +5,11 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{% static 'js/guest_mode.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/guest_mode.css' %}?after">
     <title>Document</title>
 </head>
 <body>
-    
+
     <header>
         <img src="{% static 'img/logo.png' %}" onclick="location.href='/guest_mode'"style="width:80px; height:80px;" title="logo">
         <h1 style="opacity:0.7;">AnyWhereShare</h1>
@@ -43,43 +42,17 @@
             <div class="show">
                 <div class="top">
                     <form action="http://127.0.0.1:8000/guest/upload/" method="POST" enctype="multipart/form-data" id="saveform" name="saveform">
-                        <input type="file" name="file" id="file" style="visibility:hidden;">
-                        <input id="btn-upload" type="submit" value="File Upload" onclick="onClickUpload();">
+                        <input type="file" name="file" id="btn-upload"  onchange="onClickUpload();">
+                        <input  type="submit" id="file" value="File Upload" style="visibility:hidden;">
                     </form>
-                    <span style="float:right; margin-right:20px; vertical-align:middle;">In this mode, you can only share files for 10 minites.</span>
+					<span id="show_code" style="float:right; margin-right:20px; vertical-align:middle;"></span>
+                    <span style="float:right; margin-right:20px; vertical-align:middle;">In this mode, you can only share files for 10 minutes.</span>
                 </div>
                 <div class="mid">
                     <div class="m1">파일 이름</div>
-                    <div class="m2">업로드 날짜</div>
+                    <div class="m2"></div>
                 </div>
                 <div class="down">
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check1">
-                            <label for="check1"></label></label>
-                        </div>
-                        <div class="d2">CloudComputing.ppt</div>
-                        <div class="d4">2023-05-10 오전 1:07</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                    </div>
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check2">
-                            <label for="check2"></label></label>
-                        </div>
-                        <div class="d2">file_anywhere.py</div>
-                        <div class="d4">2023-05-10 오전 2:44</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                    </div>
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check3">
-                            <label for="check3"></label></label>
-                        </div>
-                        <div class="d2">py_django_project.docx</div>
-                        <div class="d4">2023-05-10 오후 9:09</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                    </div>
                 </div>
             </div>
             <div class="detailed">
@@ -127,7 +100,7 @@
             </div>
         </div>
     </div>
-    
+    <script src="{% static 'js/guest_mode.js' %}"></script>
 </body>
 
 </html>
