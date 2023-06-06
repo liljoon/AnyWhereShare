@@ -24,3 +24,6 @@ def trash(request):
 
 def create(request):
     return render(request, 'cloudcomputing/create.html',{})
+
+def guest_login(request):
+    return render(request, 'cloudcomputing/guest_login.html',{})

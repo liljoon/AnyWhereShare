@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in - AnyWhereShare</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}?after">
+    <!--web font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header href="./main.html">
+        <logo>
+            <a href = "../"> <img src="{% static 'img/logo.png' %}" style="width:80px; height:80px;" title="logo"></a>
+        </logo>
+        <home>
+            <a href = "../" style="color:#1F3C4D; text-decoration: none;"><h1 href = "./main.html" style="opacity:0.7;">AnyWhereShare</h1></a>
+        </home>
+    </header>
+    <div class="wrap">
+
+
+
+        <div class="login">
+            <h2>GuestMode</h2>
+			<div class="signin">
+				<button class="submit" id="new_guest_btn" onclick="generate_guest()">
+					New Guest
+				</button>
+			</div>
+            <div class="login_id">
+                <h4>Code</h4>
+                <input type="text" name="code" id="code" placeholder="Code">
+            </div>
+
+            <div class="signin">
+                <button class="submit" type="button" onclick="login()">
+                    submit
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/guest_login.js' %}"></script>
+</body>
+</html>
