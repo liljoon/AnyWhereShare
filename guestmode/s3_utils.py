@@ -18,11 +18,7 @@ def uploadFile(file, owner_passwd):
 	s3.upload_fileobj(file, bucket_name, f'{owner_passwd}/{file.name}')
 
 def generateDownloadUrl(file, owner_passwd):
-	url = s3.generate_presigned_url(
-		ClientMethod='get_object',
-		Params={'Bucket': bucket_name, 'Key': f'{owner_passwd}/{file.name}'},
-		ExpiresIn=60 * 60 * 24 # 10minute
-		)
+	url = f'https://{bucket_name}.s3.ap-northeast-2.amazonaws.com/{owner_passwd}/{file}'
 	return url
 
 # 해당 owner가 갖고 있는 파일 전부 삭제
