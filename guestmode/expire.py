@@ -10,7 +10,7 @@ test = 1 # 테스트 상태일 경우 1로 설정하여 1시간동안 유효
 def expireGuestUser():
 	expire_time = 10
 	if test == 1:
-		expire_time = 60
+		expire_time = 60 * 24
 	users = GuestUser.objects.filter(create_at__lt = timezone.now() - datetime.timedelta(minutes=expire_time))
 	if len(users) == 0:
 		return
