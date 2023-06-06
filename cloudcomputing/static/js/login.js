@@ -42,7 +42,7 @@ function login() {
         console.log('로그인 성공')
         document.cookie = `accessToken=${data.token}; path=/`;
         document.cookie = 'path=/; path=/';
-        window.location.href = 'http://localhost:8000/';
+        window.location.href = 'http://localhost:8000/user_mode/';
     })
     .catch(error => {
         alert('아이디 또는 패스워드가 틀립니다');
