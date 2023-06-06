@@ -62,8 +62,21 @@ function fetchFileList() {
             path = cookie.substring(pathStartIndex + 5);
         }
     }
+
     const fileListElement = document.getElementById("show");
     fileListElement.innerHTML = '';
+
+    if(path != "/"){
+        const fileElement = document.createElement("div");
+        fileElement.className = "uploaded_file";
+        const nameElement = document.createElement("div");
+                nameElement.className = "d2";
+                nameElement.textContent = '..';
+                nameElement.addEventListener("click",
+                () => {handleFileDoubleClick('..');});
+        fileElement.appendChild(nameElement);
+        fileListElement.appendChild(fileElement);
+    }
 
     fetch('http://localhost:8000/files/list/', {
         method: 'POST',
@@ -80,10 +93,8 @@ function fetchFileList() {
         data.forEach((element) => {
             const fileElement = document.createElement("div");
             fileElement.className = "uploaded_file";
-            fileElement.onclick = function() {
-                handleFileClick(element.resource_name);
-            };
-
+            fileElement.addEventListener("click",
+            () => {handleFileInfoClick(element);});
             const checkboxDiv = document.createElement("div");
             checkboxDiv.className = "d1";
 
@@ -99,7 +110,9 @@ function fetchFileList() {
 
             const nameElement = document.createElement("div");
             nameElement.className = "d2";
-            nameElement.textContent = element.resource_name;
+            nameElement.textContent = element.resource_name + element.suffix_name;
+            nameElement.addEventListener("dblclick",
+            () => {handleFileDoubleClick(element.resource_name + element.suffix_name);});
 
             const dateElement = document.createElement("div");
             dateElement.className = "d4";
@@ -122,22 +135,31 @@ function fetchFileList() {
             fileElement.appendChild(bookmarkElement);
 
             fileListElement.appendChild(fileElement);
+            console.log(element.resource_name);
         });
     })
     .catch(error => {
         console.log(error);
     });
 }
-
 // 파일 클릭 이벤트 핸들러
-function handleFileClick(event) {
-  // 클릭된 파일 정보 가져오기
-  const fileName = event.target.innerText.trim();
+function handleFileInfoClick(element) {
+    console.log(element);
+    document.querySelector('.name span').textContent = element.resource_name;
+    document.querySelector('.i1-2 p').textContent = element.suffix_name;
+    document.querySelector('.i2-2 p').textContent = element.path;
+    document.querySelector('.i3-2 p').textContent = formatBytes(element.size);
+    document.querySelector('.i4-2 p').textContent = new Date(element.created_at);
+}
+// 파일 더블클릭 이벤트 핸들러
+function handleFileDoubleClick(fileName) {
 
   // 현재 쿠키에 저장된 path 값 가져오기
   const cookie = document.cookie;
   const pathStartIndex = cookie.indexOf("path=");
   let path = "";
+
+
 
   if (pathStartIndex > -1) {
     const pathEndIndex = cookie.indexOf(";", pathStartIndex);
@@ -148,17 +170,31 @@ function handleFileClick(event) {
     }
   }
 
-  // 쿠키의 path 값을 파일명으로 업데이트
-  path += fileName + "/";
-
-  // fetchFileList 함수 호출하여 파일 목록 갱신
-  fetchFileList(path);
-}
-
-// 파일 클릭 이벤트 리스너 등록
-const fileList = document.getElementsByClassName("uploaded_file");
-for (let i = 0; i < fileList.length; i++) {
-  fileList[i].addEventListener("click", handleFileClick);
+    if(fileName.includes('.')){
+        if(fileName == '..'){
+            const parts = path.split("/");
+            if (parts.length <= 2) {
+                document.cookie = `path=/; path=/`;
+                fetchFileList();
+            }
+            else {
+                parts.pop();
+                document.cookie = `path=${parts.join("/") + "/"}; path=/`;
+                fetchFileList();
+            }
+        }
+    }
+    else {
+        // 쿠키의 path 값을 파일명으로 업데이트
+        if(path =="/"){
+            path = fileName + "/";
+            document.cookie = `path=${path}; path=/`;
+        } else {
+            path += fileName + "/";
+            document.cookie = `path=${path}; path=/`;
+        }
+        fetchFileList();
+    }
 }
 /*
 [

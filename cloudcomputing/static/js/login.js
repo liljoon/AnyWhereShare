@@ -29,7 +29,15 @@ function login() {
             password: password
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 200) {
+            return response.json();
+        } else if (response.status === 401) {
+            throw new Error('아이디 또는 패스워드가 틀립니다');
+        } else {
+            throw new Error('로그인 요청에 실패했습니다');
+        }
+    })
     .then(data => {
         console.log('로그인 성공')
         document.cookie = `accessToken=${data.token}; path=/`;
@@ -37,7 +45,7 @@ function login() {
         window.location.href = 'http://localhost:8000/';
     })
     .catch(error => {
-        console.log(error)
+        alert('아이디 또는 패스워드가 틀립니다');
     });
 }
 
