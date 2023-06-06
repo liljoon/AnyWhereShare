@@ -19,7 +19,7 @@
         <div class="left_bar">
             <nav>
                 <ul class="menu">
-                    <li><a href="/user_mode">ALL FILE</a></li>
+                    <li><a href="/user_mode/">ALL FILE</a></li>
                 </ul>
                 <div class="dummy"></div>
                 <ul class="user">
@@ -41,10 +41,11 @@
         <div class="main">
             <div class="show">
                 <div class="top">
-                    <form action="http://127.0.0.1:8000/guest/upload/" method="POST" enctype="multipart/form-data" id="saveform" name="saveform">
-                        <input type="file" name="file" id="btn-upload"  onchange="onClickUpload();">
-                        <input  type="submit" id="file" value="File Upload" style="visibility:hidden;">
-                    </form>
+                    <input type="file" id="fileInput" style="display:none;">
+                    <label for="fileInput">
+                        <div id="btn-wrapper">Select File</div>
+                    </label>
+                    <button id="btn-upload" onclick="uploadFile()">File Upload</button>
 					<span id="show_code" style="float:right; margin-right:20px; vertical-align:middle;"></span>
                     <span style="float:right; margin-right:20px; vertical-align:middle;">In this mode, you can only share files for 10 minutes.</span>
                 </div>
@@ -74,19 +75,19 @@
                 <div class="r_detail">
                     <div class="i1">
                         <div class="i1-1"><p>파일형식</p></div>
-                        <div class="i1-2"><p>.ppt</p></div>
+                        <div class="i1-2"><p></p></div>
                     </div>
                     <div class="i2">
                         <div class="i2-1"><p>파일위치</p></div>
-                        <div class="i2-2"><p>-</p></div>
+                        <div class="i2-2"><p></p></div>
                     </div>
                     <div class="i3">
                         <div class="i3-1"><p>크기</p></div>
-                        <div class="i3-2"><p>2.18KB</p></div>
+                        <div class="i3-2"><p></p></div>
                     </div>
                     <div class="i4">
                         <div class="i4-1"><p>업로드 날짜</p></div>
-                        <div class="i4-2"><p>2023-05-10 오전 1:07</p></div>
+                        <div class="i4-2"><p></p></div>
                     </div>
                 </div>
                 <div class="btn-share">
