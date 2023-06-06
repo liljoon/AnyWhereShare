@@ -5,6 +5,7 @@ from .models import GuestUser, FileInfo
 from .serializers import GuestUserSerializer, FilesListSerializer
 from rest_framework.permissions import *
 from rest_framework import status
+from django.http import HttpResponseRedirect
 # Create your views here.
 
 import random, string
@@ -61,7 +62,8 @@ class Upload(APIView):
 			file_info = FileInfo(owner=user, file_name=file.name, download_url=generateDownloadUrl(file, passwd))
 			file_info.save()
 
-			return Response({'message': '파일 업로드 성공'}, status=status.HTTP_201_CREATED)
+			return HttpResponseRedirect('/guest_mode/')
+			#return Response({'message': '파일 업로드 성공'}, status=status.HTTP_201_CREATED)
 
 		except:
 			return Response({'error': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)
