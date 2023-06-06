@@ -4,6 +4,13 @@
 
 window.onload = function(){
     fetchFileList();
+
+    const fileInput = document.getElementById('file');
+    const uploadButton = document.getElementById('uploadButton');
+    uploadButton.addEventListener('click', () => {
+        fileInput.click(); // 파일 선택 다이얼로그 열기
+    });
+    fileInput.addEventListener('change', () => {handleFileUpload();});
 }
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -37,7 +44,24 @@ function login() {
         console.log(error)
     });
 }
-function fetchFileList() {
+
+function getPath() {
+
+    const cookie = document.cookie;
+    const pathStartIndex = cookie.indexOf("path=");
+    let path = "";
+
+    if (pathStartIndex > -1) {
+        const pathEndIndex = cookie.indexOf(";", pathStartIndex);
+        if (pathEndIndex > -1) {
+            return cookie.substring(pathStartIndex + 5, pathEndIndex);
+        } else {
+            return cookie.substring(pathStartIndex + 5);
+        }
+    }
+}
+
+function getToken() {
     // 쿠키에서 액세스 토큰 가져오기
     const cookie = document.cookie;
     const tokenStartIndex = cookie.indexOf("accessToken=");
@@ -45,24 +69,16 @@ function fetchFileList() {
     if (tokenStartIndex > -1) {
         const tokenEndIndex = cookie.indexOf(";", tokenStartIndex);
         if (tokenEndIndex > -1) {
-            accessToken = cookie.substring(tokenStartIndex + 12, tokenEndIndex);
+            return cookie.substring(tokenStartIndex + 12, tokenEndIndex);
         } else {
-            accessToken = cookie.substring(tokenStartIndex + 12);
+            return cookie.substring(tokenStartIndex + 12);
         }
     }
+}
+function fetchFileList() {
 
-    const pathStartIndex = cookie.indexOf("path=");
-    let path = "";
-
-    if (pathStartIndex > -1) {
-        const pathEndIndex = cookie.indexOf(";", pathStartIndex);
-        if (pathEndIndex > -1) {
-            path = cookie.substring(pathStartIndex + 5, pathEndIndex);
-        } else {
-            path = cookie.substring(pathStartIndex + 5);
-        }
-    }
-
+    const path = getPath();
+    const accessToken = getToken();
     const fileListElement = document.getElementById("show");
     fileListElement.innerHTML = '';
 
@@ -91,6 +107,8 @@ function fetchFileList() {
     .then(response => response.json())
     .then(data => {
         data.forEach((element) => {
+            if(element.is_valid == 0)
+                return;
             const fileElement = document.createElement("div");
             fileElement.className = "uploaded_file";
             fileElement.addEventListener("click",
@@ -135,7 +153,6 @@ function fetchFileList() {
             fileElement.appendChild(bookmarkElement);
 
             fileListElement.appendChild(fileElement);
-            console.log(element.resource_name);
         });
     })
     .catch(error => {
@@ -144,7 +161,6 @@ function fetchFileList() {
 }
 // 파일 클릭 이벤트 핸들러
 function handleFileInfoClick(element) {
-    console.log(element);
     document.querySelector('.name span').textContent = element.resource_name;
     document.querySelector('.i1-2 p').textContent = element.suffix_name;
     document.querySelector('.i2-2 p').textContent = element.path;
@@ -154,21 +170,7 @@ function handleFileInfoClick(element) {
 // 파일 더블클릭 이벤트 핸들러
 function handleFileDoubleClick(fileName) {
 
-  // 현재 쿠키에 저장된 path 값 가져오기
-  const cookie = document.cookie;
-  const pathStartIndex = cookie.indexOf("path=");
-  let path = "";
-
-
-
-  if (pathStartIndex > -1) {
-    const pathEndIndex = cookie.indexOf(";", pathStartIndex);
-    if (pathEndIndex > -1) {
-      path = cookie.substring(pathStartIndex + 5, pathEndIndex);
-    } else {
-      path = cookie.substring(pathStartIndex + 5);
-    }
-  }
+  let path = getPath()
 
     if(fileName.includes('.')){
         if(fileName == '..'){
@@ -195,6 +197,36 @@ function handleFileDoubleClick(fileName) {
         }
         fetchFileList();
     }
+}
+
+function handleFileUpload() {
+    const path = getPath()
+    const accessToken = getToken();
+
+    const fileInput = document.getElementById('file');
+    const file = fileInput.files[0]; // 파일 객체 가져오기
+    const formData = new FormData(); // FormData 객체 생성
+    formData.append('file', file); // 파일 객체 추가
+    formData.append('path', path); // path 값 추가
+
+    fetch('http://localhost:8000/files/upload/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+        body: formData
+    })
+    .then(response => {
+        if (response.status === 201) {
+            fetchFileList();
+            return response.json();
+        } else {
+            throw new Error('업로드 요청에 실패했습니다');
+        }
+    })
+    .catch(error => {
+        console.error();
+    });
 }
 /*
 [
