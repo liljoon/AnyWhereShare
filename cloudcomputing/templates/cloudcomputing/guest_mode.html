@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/guest_mode.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/guest_mode.css' %}?after">
+    <title>Document</title>
+</head>
+<body>
+    
+    <header>
+        <img src="{% static 'img/logo.png' %}" onclick="location.href='/guest_mode'"style="width:80px; height:80px;" title="logo">
+        <h1 style="opacity:0.7;">AnyWhereShare</h1>
+        <a href="#" style="color:#87C6CB; ">Help</a>
+    </header>
+    <div class="wrap">
+        <div class="left_bar">
+            <nav>
+                <ul class="menu">
+                    <li><a href="/user_mode">ALL FILE</a></li>
+                </ul>
+                <div class="dummy"></div>
+                <ul class="user">
+                    <li>
+                        <a href="#">
+                            <img src="{% static 'img/setting.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="user_set">
+                            guest
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/logout">
+                            <img src="{% static 'img/logout.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="logout">
+                            LOGOUT
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="main">
+            <div class="show">
+                <div class="top">
+                    <form action="http://127.0.0.1:8000/guest/upload/" method="POST" enctype="multipart/form-data" id="saveform" name="saveform">
+                        <input type="file" name="file" id="file" style="visibility:hidden;">
+                        <input id="btn-upload" type="submit" value="File Upload" onclick="onClickUpload();">
+                    </form>
+                    <span style="float:right; margin-right:20px; vertical-align:middle;">In this mode, you can only share files for 10 minites.</span>
+                </div>
+                <div class="mid">
+                    <div class="m1">파일 이름</div>
+                    <div class="m2">업로드 날짜</div>
+                </div>
+                <div class="down">
+                    <div class="uploaded_file">
+                        <div class="d1">
+                            <input type="checkbox" id="check1">
+                            <label for="check1"></label></label>
+                        </div>
+                        <div class="d2">CloudComputing.ppt</div>
+                        <div class="d4">2023-05-10 오전 1:07</div>
+                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
+                    </div>
+                    <div class="uploaded_file">
+                        <div class="d1">
+                            <input type="checkbox" id="check2">
+                            <label for="check2"></label></label>
+                        </div>
+                        <div class="d2">file_anywhere.py</div>
+                        <div class="d4">2023-05-10 오전 2:44</div>
+                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
+                    </div>
+                    <div class="uploaded_file">
+                        <div class="d1">
+                            <input type="checkbox" id="check3">
+                            <label for="check3"></label></label>
+                        </div>
+                        <div class="d2">py_django_project.docx</div>
+                        <div class="d4">2023-05-10 오후 9:09</div>
+                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="detailed">
+                <div class="tl">
+                    <div class="name">
+                        <span>py_django_project</span>
+                    </div>
+                    <div class="pre">
+                        <span>미리보기</span>
+                    </div>
+                </div>
+                <div class="tr">
+                    <img src="{% static 'img/bookmark_be.png' %} " style="width:50px; height:50px; float:right;">
+                </div>
+                <!--파일미리보기-->
+                <div class="mc">
+                    <img src="{% static 'img/file.png' %}" style="width:400px; height:400px;">
+                </div>
+                <div class="r_detail">
+                    <div class="i1">
+                        <div class="i1-1"><p>파일형식</p></div>
+                        <div class="i1-2"><p>.ppt</p></div>
+                    </div>
+                    <div class="i2">
+                        <div class="i2-1"><p>파일위치</p></div>
+                        <div class="i2-2"><p>-</p></div>
+                    </div>
+                    <div class="i3">
+                        <div class="i3-1"><p>크기</p></div>
+                        <div class="i3-2"><p>2.18KB</p></div>
+                    </div>
+                    <div class="i4">
+                        <div class="i4-1"><p>업로드 날짜</p></div>
+                        <div class="i4-2"><p>2023-05-10 오전 1:07</p></div>
+                    </div>
+                </div>
+                <div class="btn-share">
+                    <div class="lk">
+                        <button type="submit" class="copylink" onclick="copyLink()">COPY SHARE LINK</button>
+                    </div>
+                    <div class="qq">
+                        <button type="submit" class="createqr" onclick="createQR()">CREATE QR CODE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+
+</html>
