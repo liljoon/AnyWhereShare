@@ -28,7 +28,7 @@ window.onload=function(){
                         return false;
                     }
                 }
-
+                createAccount();
 
             }
 
@@ -55,3 +55,32 @@ window.onload=function(){
 
             })
         }
+
+function createAccount() {
+  // 사용자 입력값 가져오기
+  const userId = document.getElementById('id1').value;
+  const password = document.getElementById('pw').value;
+  const username = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+
+  // 요청 보내기
+  fetch('http://localhost:8000/accounts/signup/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      "user_id": userId,
+      "password": password,
+      "username": username,
+      "email": email
+    })
+  })
+    .then(response => {
+        window.location.href = 'http://localhost:8000/login/';
+    })
+    .catch(error => {
+      // 오류 처리
+      console.error('요청 중 오류가 발생했습니다:', error);
+    });
+}

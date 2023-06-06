@@ -15,6 +15,32 @@ function color() {
     }
 }
 
+function login() {
+  const userId = document.getElementById('id1').value;
+  const password = document.getElementById('pw').value;
+
+    fetch('http://localhost:8000/accounts/login/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            password: password
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('로그인 성공')
+        document.cookie = `accessToken=${data.token}; path=/`;
+        document.cookie = 'path=/; path=/';
+        window.location.href = 'http://localhost:8000/';
+    })
+    .catch(error => {
+        console.log(error)
+    });
+}
+
 function moveToMain(){
     location.replace("./main.html");
 }

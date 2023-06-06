@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in - AnyWhereShare</title>
-    <script src="{% static 'js/login.js' %}"></script>
     <link rel="stylesheet" href="{% static 'css/login.css' %}?after">
     <!--web font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,11 +25,11 @@
             <h2>Log in</h2>
             <div class="login_id">
                 <h4>ID</h4>
-                <input type="ID" name="" id="" placeholder="ID">
+                <input type="ID" name="" id="id1" placeholder="ID">
             </div>
             <div class="login_pw">
                 <h4>Password</h4>
-                <input type="password" name="" id="" placeholder="Password">
+                <input type="password" name="" id="pw" placeholder="Password">
             </div>
             <div class="login_etc">
                 <div class="checkbox">
@@ -41,11 +40,12 @@
                 </div>
             </div>
             <div class="signin">
-                <button class="submit" type="button">
+                <button class="submit" type="button" onclick="login()">
                     submit
                 </button>
             </div>
         </div>
     </div>
+    <script src="{% static 'js/login.js' %}"></script>
 </body>
 </html>

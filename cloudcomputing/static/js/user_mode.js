@@ -1,6 +1,10 @@
 //전역변수 : 현재 폴더 위치
 //처음 path="/"
 //토큰 accessToken =""
+
+window.onload = function(){
+    fetchFileList();
+}
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
 
@@ -58,6 +62,8 @@ function fetchFileList() {
             path = cookie.substring(pathStartIndex + 5);
         }
     }
+    const fileListElement = document.getElementById("show");
+    fileListElement.innerHTML = '';
 
     fetch('http://localhost:8000/files/list/', {
         method: 'POST',
@@ -72,8 +78,6 @@ function fetchFileList() {
     .then(response => response.json())
     .then(data => {
         data.forEach((element) => {
-            const fileListElement = document.getElementById("show");
-            fileListElement.innerHTML = '';
             const fileElement = document.createElement("div");
             fileElement.className = "uploaded_file";
             fileElement.onclick = function() {
