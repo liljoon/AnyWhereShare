@@ -12,7 +12,8 @@
 <body>
     
     <header>
-        <img src="{% static 'img/logo.png' %}" style="width:80px; height:80px;" title="logo">
+        <img src="{% static 'img/logo.png' %}" onclick="location.href='/user_mode'"
+        style="width:80px; height:80px;" title="logo">
         <h1 style="opacity:0.7;">AnyWhereShare</h1>
         <a href="#" style="color:#87C6CB; ">Help</a>
     </header>
@@ -20,8 +21,8 @@
         <div class="left_bar">
             <nav>
                 <ul class="menu">
-                    <li><a href="#user_mode">ALL FILE</a></li>
-                    <li><a href="#trash_can">TRASH CAN</a></li>
+                    <li><a href="/user_mode">ALL FILE</a></li>
+                    <li><a href="/trash_can">TRASH CAN</a></li>
                 </ul>
                 <div class="dummy"></div>
                 <ul class="user">
@@ -32,7 +33,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#logout">
+                        <a href="/logout">
                             <img src="{% static 'img/logout.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="logout">
                             LOGOUT
                         </a>
@@ -43,17 +44,19 @@
         <div class="main">
             <div class="show">
                 <div class="top">
-                    <label for="file">
-                        <div class="btn-upload">FILE UPLOAD</div>
-                    </label>
-                    <input type="file" name="file" id="file">
+                    <form id="saveform" name="saveform" enctype="multipart/form-data">
+                        <label for="file">
+                            <div class="btn-upload">FILE UPLOAD</div>
+                        </label>
+                        <input type="file" name="file" id="file">
+                    </form>
                     <button type="submit" class="delete_file" id="delete_file">DELETE FILES</button>
                 </div>
                 <div class="mid">
                     <div class="m1">파일 이름</div>
                     <div class="m2">업로드 날짜</div>
                 </div>
-                <div class="down">
+                <div class="down" id="show">
                     <div class="uploaded_file">
                         <div class="d1">
                             <input type="checkbox" id="check1">
@@ -71,6 +74,7 @@
                         <div class="d2">file_anywhere.py</div>
                         <div class="d4">2023-05-10 오전 2:44</div>
                         <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
+                        <div class="d" style="visibility:hidden;"></div>
                     </div>
                     <div class="uploaded_file">
                         <div class="d1">
@@ -105,7 +109,7 @@
                         <div class="i1-2"><p>.ppt</p></div>
                     </div>
                     <div class="i2">
-                        <div class="i2-1"><p>야옹</p></div>
+                        <div class="i2-1"><p>파일위치</p></div>
                         <div class="i2-2"><p>-</p></div>
                     </div>
                     <div class="i3">

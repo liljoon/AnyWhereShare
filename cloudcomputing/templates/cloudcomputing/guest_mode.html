@@ -12,7 +12,7 @@
 <body>
     
     <header>
-        <img src="{% static 'img/logo.png' %}" style="width:80px; height:80px;" title="logo">
+        <img src="{% static 'img/logo.png' %}" onclick="location.href='/guest_mode'"style="width:80px; height:80px;" title="logo">
         <h1 style="opacity:0.7;">AnyWhereShare</h1>
         <a href="#" style="color:#87C6CB; ">Help</a>
     </header>
@@ -20,18 +20,18 @@
         <div class="left_bar">
             <nav>
                 <ul class="menu">
-                    <li><a href="#user_mode">ALL FILE</a></li>
+                    <li><a href="/user_mode">ALL FILE</a></li>
                 </ul>
                 <div class="dummy"></div>
                 <ul class="user">
                     <li>
-                        <a href="#user_set">
+                        <a href="#">
                             <img src="{% static 'img/setting.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="user_set">
                             guest
                         </a>
                     </li>
                     <li>
-                        <a href="#logout">
+                        <a href="/logout">
                             <img src="{% static 'img/logout.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="logout">
                             LOGOUT
                         </a>
@@ -42,11 +42,11 @@
         <div class="main">
             <div class="show">
                 <div class="top">
-                    <label for="file">
-                        <div class="btn-upload">FILE UPLOAD</div>
-                    </label>
-                    <input type="file" name="file" id="file">
-                    <span style="margin-left:20px; vertical-align:middle;">In this mode, you can only share files for 10 minites.</span>
+                    <form action="http://127.0.0.1:8000/guest/upload/" method="POST" enctype="multipart/form-data" id="saveform" name="saveform">
+                        <input type="file" name="file" id="file" style="visibility:hidden;">
+                        <input id="btn-upload" type="submit" value="File Upload" onclick="onClickUpload();">
+                    </form>
+                    <span style="float:right; margin-right:20px; vertical-align:middle;">In this mode, you can only share files for 10 minites.</span>
                 </div>
                 <div class="mid">
                     <div class="m1">파일 이름</div>
@@ -104,7 +104,7 @@
                         <div class="i1-2"><p>.ppt</p></div>
                     </div>
                     <div class="i2">
-                        <div class="i2-1"><p>야옹</p></div>
+                        <div class="i2-1"><p>파일위치</p></div>
                         <div class="i2-2"><p>-</p></div>
                     </div>
                     <div class="i3">
