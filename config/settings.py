@@ -106,11 +106,11 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'anywhere', #dbname
-        'HOST': 'database-2.clxvqfgb3dhh.us-east-1.rds.amazonaws.com',
+        'NAME': secrets['DB_NAME'], #dbname
+        'HOST': secrets['DB_HOST'],
         'PORT': 3306,
-        'USER': 'aw_user', #username
-        'PASSWORD': 'ab12345!',
+        'USER': secrets['DB_USER'], #username
+        'PASSWORD': secrets['DB_PASSWORD'],
         'OPTIONS':{'charset':'utf8mb4'},
     }
 }
