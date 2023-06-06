@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - AnyWhereShare</title>
+    <script src="{% static 'js/create.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/create.css' %}?after">
+    <!--web font-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header href="./main.html">
+        <logo>
+            <a href = "../"> <img src="{% static 'img/logo.png' %}" style="width:80px; height:80px;" title="logo"></a>
+        </logo>
+        <home>
+            <a href = "../" style="color:#1F3C4D; text-decoration: none;"><h1 href = "./main.html" style="opacity:0.7;">AnyWhereShare</h1></a>
+        </home>
+    </header>
+    <div class="wrap">
+        <div class="login">
+            <h2>Create Account</h2>
+            <div class="login_id">
+                <h4>ID</h4> 
+                <input type="text" name="" id="id1" placeholder="ID">
+            </div>
+            <div class="login_pw">
+                <h4>Password</h4>
+                <input type="password" name="" id="pw" placeholder="Password">
+                <span id="pwMsg"></span>
+            </div>
+            <div class="confirm_pw">
+                <h4>Confirm Password</h4>
+                <input type="password" name="" id="pw2" placeholder="Confirm Password">
+            </div>
+            <div class="user_name">
+                <h4>User name</h4>
+                <input type="text" name="" id="name" placeholder="User name">
+            </div>
+            <div class="email">
+                <h4>e-mail</h4>
+                <input type="email" name="" id="email" placeholder="e-mail">
+            </div>
+            <div class="signin">
+                <button class="submit" type="button" value="회원가입" id="subm">
+                    submit
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'js/create.js' %}"></script>
+</body>
+</html>
