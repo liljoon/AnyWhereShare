@@ -51,40 +51,14 @@
                         <input type="file" name="file" id="file">
                     </form>
                     <button type="submit" class="delete_file" id="delete_file">DELETE FILES</button>
+                    <button type="submit" class="login" onclick="login()">LOGIN</button>
+                    <button type="submit" class="login" onclick="fetchFileList('/')">FETCH FILELIST</button>
                 </div>
                 <div class="mid">
                     <div class="m1">파일 이름</div>
                     <div class="m2">업로드 날짜</div>
                 </div>
                 <div class="down" id="show">
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check1">
-                            <label for="check1"></label></label>
-                        </div>
-                        <div class="d2">CloudComputing.ppt</div>
-                        <div class="d4">2023-05-10 오전 1:07</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                    </div>
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check2">
-                            <label for="check2"></label></label>
-                        </div>
-                        <div class="d2">file_anywhere.py</div>
-                        <div class="d4">2023-05-10 오전 2:44</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                        <div class="d" style="visibility:hidden;"></div>
-                    </div>
-                    <div class="uploaded_file">
-                        <div class="d1">
-                            <input type="checkbox" id="check3">
-                            <label for="check3"></label></label>
-                        </div>
-                        <div class="d2">py_django_project.docx</div>
-                        <div class="d4">2023-05-10 오후 9:09</div>
-                        <div class="d3"><img src="{% static 'img/bookmark_be.png' %}" style="width:20px; height:20px;"></div>
-                    </div>
                 </div>
             </div>
             <div class="detailed">
