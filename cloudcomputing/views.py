@@ -13,3 +13,14 @@ def user_set(request):
 def change_pw(request):
     return render(request, 'cloudcomputing/change_pw.html',{})
 
+def main(request):
+    return render(request, 'cloudcomputing/main.html',{})
+def help(request):
+    return render(request, 'cloudcomputing/help.html',{})
+def login(request):
+    return render(request, 'cloudcomputing/login.html',{})
+def trash(request):
+    return render(request, 'cloudcomputing/trash.html',{})
+
+def create(request):
+    return render(request, 'cloudcomputing/create.html',{})
