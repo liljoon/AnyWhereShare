@@ -182,13 +182,13 @@ label{
     margin-right:2%;
     margin-top:5px;
 }
-input#check1 {
+input.check {
     display:none;
 }
-input#check1 + label {
+input.check + label {
     cursor: pointer;
 }
-input#check1 + label:before {
+input.check + label:before {
     content: "";
     display: inline-block;
     width: 15px;
@@ -197,47 +197,7 @@ input#check1 + label:before {
     border-radius: 4px;
     vertical-align: middle;
 }
-input#check1:checked + label:before {
-    content: "";
-    background-color: #1F3C4D;
-    border-color: #1F3C4D;
-}
-input#check2 {
-    display:none;
-}
-input#check2 + label {
-    cursor: pointer;
-}
-input#check2 + label:before {
-    content: "";
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #1F3C4D;
-    border-radius: 4px;
-    vertical-align: middle;
-}
-input#check2:checked + label:before {
-    content: "";
-    background-color: #1F3C4D;
-    border-color: #1F3C4D;
-}
-input#check3 {
-    display:none;
-}
-input#check3 + label {
-    cursor: pointer;
-}
-input#check3 + label:before {
-    content: "";
-    display: inline-block;
-    width: 15px;
-    height: 15px;
-    border: 2px solid #1F3C4D;
-    border-radius: 4px;
-    vertical-align: middle;
-}
-input#check3:checked + label:before {
+input.check:checked + label:before {
     content: "";
     background-color: #1F3C4D;
     border-color: #1F3C4D;
