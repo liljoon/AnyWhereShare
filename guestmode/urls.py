@@ -6,4 +6,5 @@ urlpatterns = [
 	path('upload/', views.Upload.as_view()),
 	path('list/', views.ListFilesView.as_view()),
 	path('login/', views.LoginView.as_view()),
+	path('file_info/', views.FileInfoView.as_view()),
 ]
