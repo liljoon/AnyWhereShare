@@ -5,6 +5,7 @@ from file import views
 urlpatterns = [
     path('list/', views.ListFilesView.as_view()),
     path('upload/', views.UploadView.as_view()),
+    path('newfolder/', views.NewFolderView.as_view()),
     path('download/', views.DownloadView.as_view()),
     path('delete/', views.DeleteView.as_view()),
     path('search/', views.SearchView.as_view()),

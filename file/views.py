@@ -39,6 +39,50 @@ def split_path(path):
     return directory, file_name, extension
 
 
+class NewFolderView(APIView):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY
+    )
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+
+        name = request.data.get('name')
+        path = request.data.get('path')
+        if name and path:
+            if path == "/":
+                path = ""
+            try:
+                # 파일을 s3에 업로드
+                self.s3_client.put_object(
+                    Bucket=settings.S3_BUCKET_NAME,
+                    Key=(f'{user_id}/{path}')
+                )
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            parent_resource = Resource.objects.filter(path=path, user_account_id=User.objects.filter(user_id=user_id).first()).first()
+            resource = Resource(
+                resource_name=name,
+                resource_type='F',
+                suffix_name='',
+                is_bookmark=0,
+                is_valid=1,
+                created_at=datetime.now(),
+                modified_at=datetime.now(),
+                size=0,
+                path=path,
+                user_account_id=User.objects.filter(user_id=user_id).first(),
+                parent_resource_id=parent_resource
+            )
+            resource.save()
+            return Response({'message': '폴더 생성 성공'}, status=status.HTTP_201_CREATED)
+
+        else:
+            return Response({'error': '파일 업로드 실패'}, status=status.HTTP_400_BAD_REQUEST)
+
 class UploadView(APIView):
     s3_client = boto3.client(
         's3',
