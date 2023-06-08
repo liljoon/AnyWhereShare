@@ -17,21 +17,21 @@ function getCookie(name) {
 document.addEventListener('DOMContentLoaded', function() {
     var fileInput = document.getElementById('fileinput');
     var fileInfo = document.querySelector('.down');
-  
+
     fileInput.addEventListener('change', function() {
       var file = fileInput.files[0];
       fileInfo.innerHTML = 'Selected File: ' + file.name;
       fileInfo.style.display = 'block';
-  
+
       var form = document.getElementById('uploadForm');
       var formData = new FormData(form);
-  
+
       var request = new XMLHttpRequest();
       request.open('POST', form.action);
       request.send(formData);
     });
   });
-  
+
 */
 //
 function uploadFile() {
@@ -59,6 +59,24 @@ function uploadFile() {
 
   }
 
+function update_preview(idx)
+{
+	fetch('http://127.0.0.1:8000/guest/file_info/' + '?id=' + idx)
+	.then(res => res.json())
+	.then(data => {
+		const file_name = document.querySelector('.detailed .tl .name span');
+		file_name.innerText = data['file_name'];
+		const file_type = document.querySelector('.r_detail .i1 .i1-1 p');
+		file_type.innerText = '파일형식 : ' + data['suffix_name'];
+		const file_path = document.querySelector('.r_detail .i2 .i2-1 p');
+		file_path.innerText= '파일위치 : ' + "/";
+		const file_size = document.querySelector('.r_detail .i3 .i3-1 p');
+		file_size.innerText = '크기 : ' + data['size'] + 'bytes';
+		const upload_date = document.querySelector('.r_detail .i4 .i4-1 p');
+		upload_date.innerText = '업로드 날짜 : ' + data['created_at'];
+	})
+}
+
 
 let file_list = document.querySelector('.down');
 let passwd_cookie = getCookie('passwd');
@@ -78,7 +96,7 @@ fetch("http://localhost:8000/guest/list/", { // 파일 정보 api호출
     let i=1;
     data.forEach(file => { // 각 파일별로 한줄씩 idx, file_name, url, share순서
         file_list.innerHTML += `
-			<div class="uploaded_file">
+			<div class="uploaded_file" onclick="update_preview(${file['id']})">
                 <div class="d1">
 					<input type="checkbox" id="check${i}">
 					<label for="check${i}"></label>
