@@ -53,6 +53,8 @@ class NewFolderView(APIView):
         name = request.data.get('name')
         path = request.data.get('path')
         if name and path:
+            if path == "/":
+                path = ""
             try:
                 # 파일을 s3에 업로드
                 self.s3_client.put_object(

@@ -8,9 +8,11 @@ window.onload = function(){
     const fileInput = document.getElementById('file');
     const uploadButton = document.getElementById('uploadButton');
     const deleteButton = document.getElementById('deleteButton');
+    const folderButton = document.getElementById('folderButton');
     fileInput.addEventListener('change', () => {handleFileUpload();});
     uploadButton.addEventListener('click', () => {fileInput.click();});
     deleteButton.addEventListener('click', () => {handleFileDelete();});
+    folderButton.addEventListener('click', () => {handleFolderCreate();});
 }
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -265,6 +267,34 @@ function handleFileDelete() {
             console.error();
         });
     });
+}
+
+function handleFolderCreate() {
+    var path = getPath();
+    var name = prompt('생성할 폴더의 이름을 입력하세요:');
+    const accessToken = getToken();
+    fetch('http://localhost:8000/files/newfolder/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                'name': name,
+                'path': path
+        })
+        })
+        .then(response => {
+            if (response.status === 200) {
+                fetchFileList();
+                return response.json();
+            } else {
+                throw new Error('폴더생성 요청에 실패했습니다');
+            }
+        })
+        .catch(error => {
+            console.error();
+        });
 }
 /*
 [
