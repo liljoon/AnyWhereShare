@@ -104,15 +104,80 @@ ul{
     position:relative;
     float:left;
 }
-#saveform{
-    width:300px;
-    height:5px;
-    display:flex;
+
+#btn-wrapper{
+    width: 150px;
+    height: 33px;
+    font-size: 20px;
+    background: #173141;
+    border: 1px solid #173141;
+    color: white;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background: #919EA6;
+      color: #fff;
+    }
+    float:left;
+}
+#btn-upload{
+    width: 150px;
+    height: 35px;
+    font-size: 20px;
+    background: #173141;
+    border: 1px solid #173141;
+    color: white;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background: #919EA6;
+      color: #fff;
+    }
+    float:left;
+    vertical-align: middle;
+    margin-left:10px;
 }
 
-#btn-upload {
-    float:left;
-    width: 500px;
+/*
+.real-upload{
+    width: 120px !important;
+    height: 120px !important;
+    font-size: 100px;
+    text-align: right;
+    min-width: 0 !important;
+    outline: none;
+    background: rgb(0, 0, 0);
+    cursor: inherit;
+    display: block !important;
+    cursor: pointer;
+    position: absolute;
+    margin: 0 !important;
+    z-index: -1;
+}
+
+.upload-wrapper{
+    position: inherit;
+  width: 120px !important;
+  height: 120px !important;
+  font-size: 100px;
+  text-align: right;
+  min-width: 0 !important;
+  outline: none;
+  background: rgb(255, 255, 255);
+  cursor: inherit;
+  display: block !important;
+  cursor: pointer; 
+}*/
+  /*
+width: 300px;
     height: 35px;
     font-size: 20px;
     background: #173141;
@@ -129,8 +194,7 @@ ul{
       color: #fff;
     }
     justify-content: center;
-}
-  
+  */
 .mid{
     width:100%;
     height:3%;
@@ -160,6 +224,25 @@ ul{
     margin-right:2%;
     margin-top:5px;
 }
+.uploaded_file .d1 input[type="checkbox"]{display:none;}
+.uploaded_file .d1 input[type="checkbox"]+label{
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid #1F3C4D;
+    border-radius: 4px;
+    vertical-align: middle;
+    cursor:pointer;
+}
+.uploaded_file .d1:after{vertical-align: middle; display:block; clear:both; content:"";}
+.uploaded_file .d1 input[type="checkbox"]:checked+label{
+    content: "";
+    background-color: #1F3C4D;
+    border-color: #1F3C4D;
+    vertical-align: middle;
+}
+/*
 input#check1 {
     display:none;
 }
@@ -219,7 +302,7 @@ input#check3:checked + label:before {
     content: "";
     background-color: #1F3C4D;
     border-color: #1F3C4D;
-}
+}*/
 .tl{
     width:45%;
     height:7%;
