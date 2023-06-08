@@ -7,6 +7,8 @@ class GuestUserSerializer(serializers.ModelSerializer):
 		fields = '__all__'
 
 class FilesListSerializer(serializers.ModelSerializer):
+	created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
+
 	class Meta:
 		model = FileInfo
 		fields = '__all__'
