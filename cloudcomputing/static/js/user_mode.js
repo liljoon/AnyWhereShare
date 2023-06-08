@@ -8,8 +8,8 @@ window.onload = function(){
     const fileInput = document.getElementById('file');
     const uploadButton = document.getElementById('uploadButton');
     const deleteButton = document.getElementById('deleteButton');
-    uploadButton.addEventListener('click', () => {fileInput.click();});
     fileInput.addEventListener('change', () => {handleFileUpload();});
+    uploadButton.addEventListener('click', () => {fileInput.click();});
     deleteButton.addEventListener('click', () => {handleFileDelete();});
 }
 function formatBytes(bytes, decimals = 2) {
@@ -204,8 +204,11 @@ function handleFileDoubleClick(fileName) {
 }
 
 function handleFileUpload() {
-    const path = getPath()
+    var path = getPath()
     const accessToken = getToken();
+
+    if(path == "/")
+        path = "";
 
     const fileInput = document.getElementById('file');
     const file = fileInput.files[0]; // 파일 객체 가져오기
