@@ -7,10 +7,10 @@ window.onload = function(){
 
     const fileInput = document.getElementById('file');
     const uploadButton = document.getElementById('uploadButton');
-    uploadButton.addEventListener('click', () => {
-        fileInput.click(); // 파일 선택 다이얼로그 열기
-    });
+    const deleteButton = document.getElementById('deleteButton');
+    uploadButton.addEventListener('click', () => {fileInput.click();});
     fileInput.addEventListener('change', () => {handleFileUpload();});
+    deleteButton.addEventListener('click', () => {handleFileDelete();});
 }
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -38,7 +38,7 @@ function login() {
     .then(response => response.json())
     .then(data => {
         document.cookie = `accessToken=${data.token}; path=/`;
-        document.cookie = 'path=/';
+        document.cookie = 'path=/; path=/';
     })
     .catch(error => {
         console.log(error)
@@ -109,6 +109,8 @@ function fetchFileList() {
         data.forEach((element) => {
             if(element.is_valid == 0)
                 return;
+            if(element.resource_name == '')
+                return;
             const fileElement = document.createElement("div");
             fileElement.className = "uploaded_file";
             fileElement.addEventListener("click",
@@ -118,10 +120,11 @@ function fetchFileList() {
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkbox.id = `check${element.resource_id}`;
+            checkbox.className = 'check';
+            checkbox.id = `resource_${element.resource_id}`;
 
             const checkboxLabel = document.createElement("label");
-            checkboxLabel.htmlFor = `check${element.resource_id}`;
+            checkboxLabel.htmlFor = `resource_${element.resource_id}`;
 
             checkboxDiv.appendChild(checkbox);
             checkboxDiv.appendChild(checkboxLabel);
@@ -181,6 +184,7 @@ function handleFileDoubleClick(fileName) {
             }
             else {
                 parts.pop();
+                parts.pop();
                 document.cookie = `path=${parts.join("/") + "/"}; path=/`;
                 fetchFileList();
             }
@@ -226,6 +230,37 @@ function handleFileUpload() {
     })
     .catch(error => {
         console.error();
+    });
+}
+
+function handleFileDelete() {
+    var path = getPath();
+    const accessToken = getToken();
+    var checkboxes = document.querySelectorAll(".check:checked");
+    if(path == "/")
+        path = "";
+    checkboxes.forEach((checkbox)=>{
+        fetch('http://localhost:8000/files/delete/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                'path': `${path}${checkbox.parentNode.nextSibling.textContent}`
+        })
+        })
+        .then(response => {
+            if (response.status === 200) {
+                fetchFileList();
+                return response.json();
+            } else {
+                throw new Error('삭제 요청에 실패했습니다');
+            }
+        })
+        .catch(error => {
+            console.error();
+        });
     });
 }
 /*
