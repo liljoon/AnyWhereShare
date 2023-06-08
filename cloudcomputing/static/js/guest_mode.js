@@ -11,10 +11,6 @@ function getCookie(name) {
     return null;
 }
 
-function shareLink(){
-	window.open('/popup_share/', 'target', 'top=100, left=300, width=500, height=600, toolbar=no, menubar=no, location=no, status=no, scrollbars=no, resizable=no');
-}
-
 
 let file_list = document.querySelector('.down');
 let passwd_cookie = getCookie('passwd');

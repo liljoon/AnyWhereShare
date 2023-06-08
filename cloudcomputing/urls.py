@@ -11,5 +11,4 @@ urlpatterns = [
     path('create/', views.create, name='change_pw'),
     path('trash/', views.trash, name='change_pw'),
     path('guest_login/', views.guest_login, name='guest_login'),
-    path('popup_share/', views.popup_share, name='pop_share'),
 ]

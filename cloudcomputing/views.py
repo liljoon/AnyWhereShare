@@ -27,6 +27,3 @@ def create(request):
 
 def guest_login(request):
     return render(request, 'cloudcomputing/guest_login.html',{})
-
-def popup_share(request):
-    return render(request, 'cloudcomputing/popup_share.html',{})
