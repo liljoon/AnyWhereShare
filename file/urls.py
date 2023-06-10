@@ -11,5 +11,8 @@ urlpatterns = [
     path('search/', views.SearchView.as_view()),
     path('info/', views.InfoView.as_view()),
     path('modify/', views.ModifyView.as_view()),
+    path('trashlist/', views.ListTrashView.as_view()),
+    path('recover/', views.RecoverView.as_view()),
+    path('realdelete/', views.RealDeleteView.as_view()),
     # path('lock/', views.LockView.as_view()),
 ]

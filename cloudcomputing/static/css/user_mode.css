@@ -110,7 +110,7 @@ label{
 }
 
 .btn-upload {
-    width: 300px;
+    width: 200px;
     height: 35px;
     font-size: 20px;
     background: #173141;
@@ -134,7 +134,7 @@ label{
 }
 .delete_file{
     float:right;
-    width: 300px;
+    width: 200px;
     height: 35px;
     margin-right:2%;
     font-size: 20px;
