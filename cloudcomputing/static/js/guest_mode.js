@@ -47,6 +47,7 @@ function uploadFile() {
     })
     .then(response=>{
         if(response.ok){
+			alert("업로드 완료!");
             location.reload();
         }
         else{
@@ -58,6 +59,36 @@ function uploadFile() {
     });
 
   }
+
+function copyToClipboard(text) {
+  // 텍스트를 임시로 저장할 textarea 엘리먼트를 생성합니다.
+  var textarea = document.createElement('textarea');
+  textarea.value = text;
+
+  // textarea를 body에 추가합니다.
+  document.body.appendChild(textarea);
+
+  // textarea의 내용을 선택하고 복사합니다.
+  textarea.select();
+  document.execCommand('copy');
+
+  // textarea를 제거합니다.
+  document.body.removeChild(textarea);
+}
+
+function copylink_click_event(url) {
+	fetch('http://localhost:8000/share/' + '?url=' + url)
+	.then(res => res.json())
+	.then(data => {
+		const copylink_btn = document.querySelector('.copylink');
+
+		copylink_btn.disabled = true;
+		copylink_btn.innerText = data['url'];
+		copyToClipboard(data['url']);
+		alert('복사 완료!');
+	})
+	.catch(err => alert('error!'))
+}
 
 function update_preview(idx)
 {
@@ -74,6 +105,12 @@ function update_preview(idx)
 		file_size.innerText = '크기 : ' + data['size'] + 'bytes';
 		const upload_date = document.querySelector('.r_detail .i4 .i4-1 p');
 		upload_date.innerText = '업로드 날짜 : ' + data['created_at'];
+
+		// share 관련 Update
+		const copylink_btn = document.querySelector('.copylink');
+		copylink_btn.addEventListener('click', (event) =>{
+			copylink_click_event(data['download_url']);
+		});
 	})
 }
 
