@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>AnyWhereShare - Share</title>
+</head>
+<body>
+	<div id="share_list">
+
+	</div>
+</body>
+	<script>
+		var queryString = window.location.search;
+		var share_list = document.querySelector('#share_list');
+
+		fetch('http://localhost:8000/share/'+queryString)
+		.then(res => res.json())
+		.then(data => {
+			var qr_img_src = data['qr_img_b64'];
+			var url = data['url'];
+			var code = data['code'];
+
+			share_list.innerHTML += `<p><img width="400" height="400" src="${qr_img_src}" /></p>`
+		})
+		.catch(err => share_list.innerHTML+=err) // 없으면 에러 띄움
+	</script>
+</html>

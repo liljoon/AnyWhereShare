@@ -90,6 +90,11 @@ function copylink_click_event(url) {
 	.catch(err => alert('error!'))
 }
 
+function create_qr_event(url){
+ 	window.open('/popup_share/' + '?url=' + url, 'target', 'top=100, left=300, width=500, height=600, \
+		toolbar=no, menubar=no, location=no, status=no, scrollbars=no, resizable=no');
+ }
+
 function update_preview(idx)
 {
 	fetch('http://127.0.0.1:8000/guest/file_info/' + '?id=' + idx)
@@ -110,6 +115,11 @@ function update_preview(idx)
 		const copylink_btn = document.querySelector('.copylink');
 		copylink_btn.addEventListener('click', (event) =>{
 			copylink_click_event(data['download_url']);
+		});
+
+		const create_qr_btn = document.querySelector('.createqr');
+		create_qr_btn.addEventListener('click', (event) =>{
+			create_qr_event(data['download_url']);
 		});
 	})
 }
