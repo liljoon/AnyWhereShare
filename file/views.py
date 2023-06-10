@@ -254,7 +254,6 @@ class DeleteView(APIView):
 
         # Split the path into directory, file name, and extension
         directory, file_name, extension = split_path(path)
-        print(directory, file_name, extension)
         # Find the resource with the given path
         resource = Resource.objects.filter(path=directory,resource_name=file_name, suffix_name=extension,
                                            user_account_id=user_id, is_valid=1).first()
@@ -327,13 +326,15 @@ class RecoverView(APIView):
             return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
 
         resource = Resource.objects.filter(resource_id=resource_id).first()
+
         if not resource:
-            return Response({'error': '해당 파일은 존재하지 않음.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': '해당 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
 
         # Soft delete the resource and all its sub-resources
         self._recover_resource(resource)
 
         return Response({'message': '파일 삭제 성공'}, status=status.HTTP_200_OK)
+
 
     def _recover_resource(self, resource):
         # Soft delete the resource by setting is_valid to 0
@@ -344,6 +345,56 @@ class RecoverView(APIView):
         sub_resources = Resource.objects.filter(parent_resource_id=resource.resource_id)
         for sub_resource in sub_resources:
             self._soft_delete_resource(sub_resource)
+
+
+class RealDeleteView(APIView):
+    s3_client = boto3.client(
+        's3',
+        aws_access_key_id=settings.S3_ACCESS_KEY,
+        aws_secret_access_key=settings.S3_ACCESS_SECRET_KEY
+    )
+
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+        path = request.data.get('path')
+        resource_id = request.data.get('resource_id')
+
+        if not path:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+        if not resource_id:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Find the resource with the given path
+        resource = Resource.objects.filter(resource_id=resource_id, is_valid=0).first()
+
+        if not resource:
+            return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+        file_path = user_id + "/" + path
+
+        # S3에서 파일을 삭제합니다.
+        if not self._s3_delete_file(file_path):
+            return Response({'error': '파일 삭제 실패'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Soft delete the resource and all its sub-resources
+        self._real_delete_resource(resource)
+
+        return Response({'message': '파일 삭제 성공'}, status=status.HTTP_200_OK)
+
+    def _s3_delete_file(self, file_path):
+        try:
+            self.s3_client.delete_object(Bucket=settings.S3_BUCKET_NAME, Key=file_path)
+            return True
+        except ClientError:
+            return False
+
+    def _real_delete_resource(self, resource):
+        print(resource.resource_id)
+        # Soft delete the resource by setting is_valid to 0
+        resource.delete()
+
 
 class SearchView(APIView):
     @views.jwt_auth

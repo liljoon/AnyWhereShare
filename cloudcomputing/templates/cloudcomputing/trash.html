@@ -3,44 +3,37 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trash - AnyWhereShare</title>
-    <script src="{% static 'js/main.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'css/trash.css' %}?after">
-     <!--web font-->
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Righteous&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/trash.css' %}">
+    <title>Document</title>
 </head>
 <body>
+
     <header>
-        <logo>
-            <img src="{% static 'img/logo.png' %}" style="width:60px; height:60px;" title="logo">
-        </logo>
-        <home>
-            <h1 style="opacity:0.7;">AnyWhereShare</h1>
-        </home>
-        <help>
-            <a href="../help" style="color:#87C6CB; ">Help</a>
-        </help>
+        <img src="{% static 'img/logo.png' %}" onclick="location.href='/user_mode/'"
+        style="width:80px; height:80px;" title="logo">
+        <h1 style="opacity:0.7;">AnyWhereShare</h1>
+        <a href="#" style="color:#87C6CB; ">Help</a>
     </header>
     <div class="wrap">
         <div class="left_bar">
             <nav>
                 <ul class="menu">
-                    <li><a href="#user_mode">ALL FILE</a></li>
-                    <li><a href="/trash">TRASH</a></li>
+                    <li><a href="/user_mode">ALL FILE</a></li>
+                    <li><a href="/trash">TRASH CAN</a></li>
                 </ul>
                 <div class="dummy"></div>
                 <ul class="user">
                     <li>
-                        <a href="/user_set">
+                        <a href="/user_set/">
                             <img src="{% static 'img/setting.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="user_set">
                             test01님
                         </a>
                     </li>
                     <li>
-                        <a href="../">
+                        <a href="/logout/">
                             <img src="{% static 'img/logout.png' %}" style="width:30px; height:30px; -webkit-filter: opacity(.5) drop-shadow(0 0 0 #1F3C4D); filter: opacity(.5) dropt-shadow(0 0 0 #1F3C4D);" title="logout">
                             LOGOUT
                         </a>
@@ -49,21 +42,29 @@
             </nav>
         </div>
         <div class="main">
-            
             <div class="show">
-                <div class="trash">
-                    <img src="{% static 'img/trash.png' %}" style="width:300px; height:300px;" title="trash">
+                <div class="top">
+                    <button type="submit" class="delete_file" id="recoverButton">RECOVER FILES</button>
+                    <button type="submit" class="delete_file" id="realDeleteButton">DELETE FILES</button>
                 </div>
-                    
+                <div class="mid">
+                    <div class="m1">파일 이름</div>
+                    <div class="m2">업로드 날짜</div>
+                </div>
+                <div class="down" id="show">
+                </div>
             </div>
             <div class="detailed">
                 <div class="tl">
                     <div class="name">
-                        <span>py_django_project</span>
+                        <span></span>
                     </div>
                     <div class="pre">
                         <span>미리보기</span>
                     </div>
+                </div>
+                <div class="tr">
+                    <img src="{% static 'img/bookmark_be.png' %} " style="width:50px; height:50px; float:right;">
                 </div>
                 <!--파일미리보기-->
                 <div class="mc">
@@ -72,33 +73,33 @@
                 <div class="r_detail">
                     <div class="i1">
                         <div class="i1-1"><p>파일형식</p></div>
-                        <div class="i1-2"><p>.ppt</p></div>
+                        <div class="i1-2"><p></p></div>
                     </div>
                     <div class="i2">
-                        <div class="i2-1"><p>크기</p></div>
-                        <div class="i2-2"><p>2.18KB</p></div>
+                        <div class="i2-1"><p>파일위치</p></div>
+                        <div class="i2-2"><p></p></div>
                     </div>
                     <div class="i3">
-                        <div class="i3-1"><p>업로드 날짜</p></div>
-                        <div class="i3-2"><p>2023-05-05 오후 9:09</p></div>
+                        <div class="i3-1"><p>크기</p></div>
+                        <div class="i3-2"><p></p></div>
                     </div>
                     <div class="i4">
-                        <div class="i4-1"><p>삭제 날짜</p></div>
-                        <div class="i4-2"><p>2023-05-08 오후 12:34</p></div>
+                        <div class="i4-1"><p>업로드 날짜</p></div>
+                        <div class="i4-2"><p></p></div>
                     </div>
                 </div>
                 <div class="btn-share">
                     <div class="lk">
-                        <button type="submit" class="perDEL" onclick="perDEL()">PERMANENTLY DELETE</button>
+                        <button type="submit" class="copylink" onclick="copyLink()">COPY SHARE LINK</button>
                     </div>
                     <div class="qq">
-                        <button type="submit" class="restore" onclick="restore()">RESTORE</button>
+                        <button type="submit" class="createqr" onclick="createQR()">CREATE QR CODE</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-</body>
 
+</body>
+<script src="{% static 'js/trash.js' %}"></script>
 </html>

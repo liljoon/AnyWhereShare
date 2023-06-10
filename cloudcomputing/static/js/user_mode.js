@@ -51,8 +51,6 @@ function getPath() {
 
     const cookie = document.cookie;
     const pathStartIndex = cookie.indexOf("path=");
-    let path = "";
-
     if (pathStartIndex > -1) {
         const pathEndIndex = cookie.indexOf(";", pathStartIndex);
         if (pathEndIndex > -1) {
@@ -67,7 +65,6 @@ function getToken() {
     // 쿠키에서 액세스 토큰 가져오기
     const cookie = document.cookie;
     const tokenStartIndex = cookie.indexOf("accessToken=");
-    let accessToken = "";
     if (tokenStartIndex > -1) {
         const tokenEndIndex = cookie.indexOf(";", tokenStartIndex);
         if (tokenEndIndex > -1) {
