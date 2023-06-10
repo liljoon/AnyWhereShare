@@ -95,33 +95,29 @@ function create_qr_event(url){
 		toolbar=no, menubar=no, location=no, status=no, scrollbars=no, resizable=no');
  }
 
-function update_preview(idx)
+function update_preview(data)
 {
-	fetch('http://127.0.0.1:8000/guest/file_info/' + '?id=' + idx)
-	.then(res => res.json())
-	.then(data => {
-		const file_name = document.querySelector('.detailed .tl .name span');
-		file_name.innerText = data['file_name'];
-		const file_type = document.querySelector('.r_detail .i1 .i1-1 p');
-		file_type.innerText = '파일형식 : ' + data['suffix_name'];
-		const file_path = document.querySelector('.r_detail .i2 .i2-1 p');
-		file_path.innerText= '파일위치 : ' + "/";
-		const file_size = document.querySelector('.r_detail .i3 .i3-1 p');
-		file_size.innerText = '크기 : ' + data['size'] + 'bytes';
-		const upload_date = document.querySelector('.r_detail .i4 .i4-1 p');
-		upload_date.innerText = '업로드 날짜 : ' + data['created_at'];
+	const file_name = document.querySelector('.detailed .tl .name span');
+	file_name.innerText = data['file_name'];
+	const file_type = document.querySelector('.r_detail .i1 .i1-1 p');
+	file_type.innerText = '파일형식 : ' + data['suffix_name'];
+	const file_path = document.querySelector('.r_detail .i2 .i2-1 p');
+	file_path.innerText= '파일위치 : ' + "/";
+	const file_size = document.querySelector('.r_detail .i3 .i3-1 p');
+	file_size.innerText = '크기 : ' + data['size'] + 'bytes';
+	const upload_date = document.querySelector('.r_detail .i4 .i4-1 p');
+	upload_date.innerText = '업로드 날짜 : ' + data['created_at'];
 
-		// share 관련 Update
-		const copylink_btn = document.querySelector('.copylink');
-		copylink_btn.addEventListener('click', (event) =>{
-			copylink_click_event(data['download_url']);
-		});
+	// share 관련 Update
+	const copylink_btn = document.querySelector('.copylink');
+	copylink_btn.addEventListener('click', (event) =>{
+		copylink_click_event(data['download_url']);
+	});
 
-		const create_qr_btn = document.querySelector('.createqr');
-		create_qr_btn.addEventListener('click', (event) =>{
-			create_qr_event(data['download_url']);
-		});
-	})
+	const create_qr_btn = document.querySelector('.createqr');
+	create_qr_btn.addEventListener('click', (event) =>{
+		create_qr_event(data['download_url']);
+	});
 }
 
 
@@ -143,7 +139,7 @@ fetch("http://localhost:8000/guest/list/", { // 파일 정보 api호출
     let i=1;
     data.forEach(file => { // 각 파일별로 한줄씩 idx, file_name, url, share순서
         file_list.innerHTML += `
-			<div class="uploaded_file" onclick="update_preview(${file['id']})">
+			<div class="uploaded_file file${i}">
                 <div class="d1">
 					<input type="checkbox" id="check${i}">
 					<label for="check${i}"></label>
@@ -157,6 +153,13 @@ fetch("http://localhost:8000/guest/list/", { // 파일 정보 api호출
 		`;
         i++;
     });
+	const file_divs = file_list.children;
+	for (let i = 0; i < file_divs.length; i++) {
+		const file_div = file_divs[i];
+		file_div.addEventListener('click', function(event) {
+			update_preview(data[i]);
+		});
+	}
 })
 
 const show_code = document.getElementById('show_code');
