@@ -301,6 +301,50 @@ class ListFilesView(APIView):
         return Response(data, status=status.HTTP_200_OK)
 
 
+class ListTrashView(APIView):
+    @views.jwt_auth
+    def post(self, request):
+        token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
+        user_id = get_user_id(token)
+
+        resources = Resource.objects.filter(is_valid=0, user_account_id=user_id)
+
+        if not resources:
+            return Response({'error': '해당 경로의 파일이 존재하지 않음'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ResourceSerializer(resources, many=True)
+        data = serializer.data
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+class RecoverView(APIView):
+    @views.jwt_auth
+    def post(self, request):
+        resource_id = request.data.get('resource_id')
+
+        if not resource_id:
+            return Response({'error': '잘못된 요청'}, status=status.HTTP_400_BAD_REQUEST)
+
+        resource = Resource.objects.filter(resource_id=resource_id).first()
+        if not resource:
+            return Response({'error': '해당 파일은 존재하지 않음.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Soft delete the resource and all its sub-resources
+        self._recover_resource(resource)
+
+        return Response({'message': '파일 삭제 성공'}, status=status.HTTP_200_OK)
+
+    def _recover_resource(self, resource):
+        # Soft delete the resource by setting is_valid to 0
+        resource.is_valid = 1
+        resource.save()
+
+        # Soft delete all the sub-resources recursively
+        sub_resources = Resource.objects.filter(parent_resource_id=resource.resource_id)
+        for sub_resource in sub_resources:
+            self._soft_delete_resource(sub_resource)
+
 class SearchView(APIView):
     @views.jwt_auth
     def get(self, request):
