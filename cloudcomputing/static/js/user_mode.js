@@ -225,7 +225,6 @@ function handleFileDownload() {
         })
         .then(response => {
             if (response.status === 200) {
-                fetchFileList();
                 return response.blob();
             } else {
                 throw new Error('다운로드 요청에 실패했습니다');
