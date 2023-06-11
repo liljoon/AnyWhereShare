@@ -7,10 +7,12 @@ window.onload = function(){
 
     const fileInput = document.getElementById('file');
     const uploadButton = document.getElementById('uploadButton');
+    const downloadButton = document.getElementById('downloadButton');
     const deleteButton = document.getElementById('deleteButton');
     const folderButton = document.getElementById('folderButton');
     fileInput.addEventListener('change', () => {handleFileUpload();});
     uploadButton.addEventListener('click', () => {fileInput.click();});
+    downloadButton.addEventListener('click', () => {handleFileDownload();});
     deleteButton.addEventListener('click', () => {handleFileDelete();});
     folderButton.addEventListener('click', () => {handleFolderCreate();});
 }
@@ -202,8 +204,51 @@ function handleFileDoubleClick(fileName) {
     }
 }
 
+function handleFileDownload() {
+    var path = getPath();
+    const accessToken = getToken();
+
+    if(path == "/")
+    path = "";
+    
+    var checkboxes = document.querySelectorAll(".check:checked");
+    checkboxes.forEach((checkbox)=>{
+        fetch('http://localhost:8000/files/download/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({
+                'path': `${path}${checkbox.parentNode.nextSibling.textContent}`
+            })
+        })
+        .then(response => {
+            if (response.status === 200) {
+                fetchFileList();
+                return response.blob();
+            } else {
+                throw new Error('다운로드 요청에 실패했습니다');
+            }
+        })
+        .then(blob => {
+            // Blob을 파일로 저장하거나 다른 방식으로 파일 다운로드를 처리할 수 있습니다.
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = checkbox.parentNode.nextSibling.textContent; // 다운로드할 파일의 이름을 지정합니다.
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error();
+        });
+    });
+}
+
 function handleFileUpload() {
-    var path = getPath()
+    var path = getPath();
     const accessToken = getToken();
 
     if(path == "/")

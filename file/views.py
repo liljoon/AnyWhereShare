@@ -201,7 +201,7 @@ class DownloadView(APIView):
     )
 
     @views.jwt_auth
-    def get(self, request):
+    def post(self, request):
         token = request.META.get('HTTP_AUTHORIZATION').split(' ')[1]
         user_id = get_user_id(token)
         path = request.data.get('path')
