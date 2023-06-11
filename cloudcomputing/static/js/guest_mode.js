@@ -1,3 +1,8 @@
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
+
+var fullURL = currentProtocol + '//' + currentHost;
+
 /*function onClickUpload() {
     let myInput = document.getElementById("file");
     myInput.click();
@@ -77,7 +82,7 @@ function copyToClipboard(text) {
 }
 
 function copylink_click_event(url) {
-	fetch('http://localhost:8000/share/' + '?url=' + url)
+	fetch(fullURL + '/share/' + '?url=' + url)
 	.then(res => res.json())
 	.then(data => {
 		const copylink_btn = document.querySelector('.copylink');
@@ -125,7 +130,7 @@ let file_list = document.querySelector('.down');
 let passwd_cookie = getCookie('passwd');
 if (passwd_cookie == null)
     alert("No passwd!");
-fetch("http://localhost:8000/guest/list/", { // 파일 정보 api호출
+fetch(fullURL + "/guest/list/", { // 파일 정보 api호출
     method : 'POST',
     headers:{
         'Content-Type': 'application/json'

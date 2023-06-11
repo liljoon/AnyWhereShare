@@ -4,6 +4,11 @@ const loginId = document.getElementById('LOGIN_ID');
 const loginPw = document.getElementById('LOGIN_PW');
 const loginBtn = document.getElementById('LOGIN_BTN');
 
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
+
+var fullURL = currentProtocol + '//' + currentHost;
+
 function color() {
     if((loginId.value.length>0 && loginId.value.indexOf("@")!==-1)
         && loginPw.value.length>=5){
@@ -19,7 +24,7 @@ function login() {
   const userId = document.getElementById('id1').value;
   const password = document.getElementById('pw').value;
 
-    fetch('http://localhost:8000/accounts/login/', {
+    fetch(fullURL + '/accounts/login/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

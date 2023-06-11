@@ -1,3 +1,8 @@
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
+
+var fullURL = currentProtocol + '//' + currentHost;
+
 window.onload=function(){
     //head에 직성할때 써야 하는 코드
 
@@ -64,7 +69,7 @@ function createAccount() {
   const email = document.getElementById('email').value;
 
   // 요청 보내기
-  fetch('http://localhost:8000/accounts/signup/', {
+  fetch(fullURL + '/accounts/signup/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -77,9 +82,9 @@ function createAccount() {
     })
   })
     .then(response => {
-        
+
         if (response.status === 200) {
-            window.location.href = 'http://localhost:8000/login/';
+            window.location.href = fullURL + '/login/';
         } else if (response.status === 401) {
             throw new Error('입력 조건에 맞지 않습니다');
         } else {
