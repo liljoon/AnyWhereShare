@@ -4,7 +4,7 @@ from django.utils import timezone
 import datetime
 from .s3_utils import deleteAllFiles
 
-test = 1 # 테스트 상태일 경우 1로 설정하여 1시간동안 유효
+test = 0 # 테스트 상태일 경우 1로 설정하여 1시간동안 유효
 
 # 생성된지 10분 지난 GuestUser 자동삭제
 def expireGuestUser():

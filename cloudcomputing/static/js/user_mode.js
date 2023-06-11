@@ -2,6 +2,11 @@
 //처음 path="/"
 //토큰 accessToken =""
 
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
+
+var fullURL = currentProtocol + '//' + currentHost;
+
 window.onload = function(){
     fetchFileList();
 
@@ -27,7 +32,7 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 function login() {
-    fetch('http://localhost:8000/accounts/login/', {
+    fetch(fullURL + '/accounts/login/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -96,7 +101,7 @@ function fetchFileList() {
         fileListElement.appendChild(fileElement);
     }
 
-    fetch('http://localhost:8000/files/list/', {
+    fetch(fullURL + '/files/list/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -218,7 +223,7 @@ function handleFileUpload() {
     formData.append('file', file); // 파일 객체 추가
     formData.append('path', path); // path 값 추가
 
-    fetch('http://localhost:8000/files/upload/', {
+    fetch(fullURL + '/files/upload/', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${accessToken}`
@@ -245,7 +250,7 @@ function handleFileDelete() {
     if(path == "/")
         path = "";
     checkboxes.forEach((checkbox)=>{
-        fetch('http://localhost:8000/files/delete/', {
+        fetch(fullURL + '/files/delete/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -273,7 +278,7 @@ function handleFolderCreate() {
     var path = getPath();
     var name = prompt('생성할 폴더의 이름을 입력하세요:');
     const accessToken = getToken();
-    fetch('http://localhost:8000/files/newfolder/', {
+    fetch(fullURL + '/files/newfolder/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

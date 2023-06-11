@@ -12,8 +12,12 @@
 	<script>
 		var queryString = window.location.search;
 		var share_list = document.querySelector('#share_list');
+		var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+		var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
 
-		fetch('http://localhost:8000/share/'+queryString)
+		var fullURL = currentProtocol + '//' + currentHost;
+
+		fetch(fullURL + '/share/'+queryString)
 		.then(res => res.json())
 		.then(data => {
 			var qr_img_src = data['qr_img_b64'];
