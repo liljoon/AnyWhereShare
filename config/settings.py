@@ -41,7 +41,7 @@ S3_BUCKET_NAME= secrets['S3_BUCKET_NAME']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['18.212.81.252']
 
 
 # Application definition
