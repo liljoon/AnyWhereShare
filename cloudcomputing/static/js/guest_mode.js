@@ -46,7 +46,7 @@ function uploadFile() {
     var formData = new FormData();
     formData.append('file', files);
 
-    fetch("http://127.0.0.1:8000/guest/upload/",{
+    fetch(fullURL + "/guest/upload/",{
         method: 'POST',
         body: formData,
     })
