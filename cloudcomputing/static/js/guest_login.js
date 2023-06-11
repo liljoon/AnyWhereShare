@@ -1,6 +1,11 @@
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
+
+var fullURL = currentProtocol + '//' + currentHost;
+
 function login(){
     passwd_value = document.querySelector('#code').value; //text input value
-		fetch("http://localhost:8000/guest/login/", {
+		fetch(fullURL + "/guest/login/", {
 				method: "POST",
 				headers : {
 					"Content-Type" : "application/json",
@@ -26,7 +31,7 @@ function login(){
 
 function generate_guest()
 {
-	fetch("http://localhost:8000/guest/generate/") //백엔드 주소로 바꿔야함
+	fetch(fullURL + "/guest/generate/") //백엔드 주소로 바꿔야함
 		.then(res => res.json())
 		.then(data => {
 			document.cookie = `passwd=${data.passwd}; path=/`;
