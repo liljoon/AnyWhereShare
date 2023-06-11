@@ -218,7 +218,7 @@ function handleFileDownload() {
     
     var checkboxes = document.querySelectorAll(".check:checked");
     checkboxes.forEach((checkbox)=>{
-        fetch('http://localhost:8000/files/download/', {
+        fetch(fullURL + '/files/download/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

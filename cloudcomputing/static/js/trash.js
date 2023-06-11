@@ -1,7 +1,10 @@
 //전역변수 : 현재 폴더 위치
 //처음 path="/"
 //토큰 accessToken =""
+var currentProtocol = location.protocol; // 현재 프로토콜 (예: "http:", "https:")
+var currentHost = location.host; // 현재 호스트 (예: "example.com", "localhost:3000")
 
+var fullURL = currentProtocol + '//' + currentHost;
 window.onload = function(){
 
     setTimeout(() => fetchTrashList(), 1000);
@@ -42,7 +45,7 @@ function fetchTrashList() {
     const fileListElement = document.getElementById("show");
     fileListElement.innerHTML = '';
 
-    fetch('http://localhost:8000/files/trashlist/', {
+    fetch(fullURL + '/files/trashlist/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -124,7 +127,7 @@ function handleFileDelete() {
     const accessToken = getToken();
     var checkboxes = document.querySelectorAll(".check:checked");
     checkboxes.forEach((checkbox)=>{
-        fetch('http://localhost:8000/files/realdelete/', {
+        fetch(fullURL + '/files/realdelete/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,7 +156,7 @@ function handleFileRecover() {
     const accessToken = getToken();
     var checkboxes = document.querySelectorAll(".check:checked");
     checkboxes.forEach((checkbox)=>{
-        fetch('http://localhost:8000/files/recover/', {
+        fetch(fullURL + '/files/recover/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
