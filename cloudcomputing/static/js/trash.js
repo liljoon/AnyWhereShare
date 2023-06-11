@@ -3,7 +3,8 @@
 //토큰 accessToken =""
 
 window.onload = function(){
-    fetchTrashList();
+
+    setTimeout(() => fetchTrashList(), 1000);
     const recoverButton = document.getElementById('recoverButton');
     const realDeleteButton = document.getElementById('realDeleteButton');
     const usermodeButton = document.querySelector('a[href="/user_mode"]');
@@ -130,13 +131,12 @@ function handleFileDelete() {
                 'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
-                'path': `${checkbox.parentNode.nextSibling.nextSibling.textContent}`,
+                'path': `${checkbox.parentNode.nextSibling.nextSibling.textContent}${checkbox.parentNode.nextSibling.nextSibling.nextSibling.textContent}`,
                 'resource_id': `${checkbox.parentNode.nextSibling.textContent}`
         })
         })
         .then(response => {
             if (response.status === 200) {
-                fetchTrashList();
                 return response.json();
             } else {
                 throw new Error('삭제 요청에 실패했습니다');
@@ -146,6 +146,7 @@ function handleFileDelete() {
             console.error();
         });
     });
+    setTimeout(() => fetchTrashList(), 1000);
 }
 
 function handleFileRecover() {
@@ -164,7 +165,6 @@ function handleFileRecover() {
         })
         .then(response => {
             if (response.status === 200) {
-                fetchTrashList();
                 return response.json();
             } else {
                 throw new Error('삭제 요청에 실패했습니다');
@@ -174,4 +174,5 @@ function handleFileRecover() {
             console.error();
         });
     });
+    setTimeout(() => fetchTrashList(), 1000);
 }

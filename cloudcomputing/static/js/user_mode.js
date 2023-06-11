@@ -268,7 +268,6 @@ function handleFileUpload() {
     })
     .then(response => {
         if (response.status === 201) {
-            fetchFileList();
             return response.json();
         } else {
             throw new Error('업로드 요청에 실패했습니다');
@@ -277,6 +276,7 @@ function handleFileUpload() {
     .catch(error => {
         console.error();
     });
+    setTimeout(() => fetchFileList(), 1000);
 }
 
 function handleFileDelete() {
@@ -298,7 +298,7 @@ function handleFileDelete() {
         })
         .then(response => {
             if (response.status === 200) {
-                fetchFileList();
+                setTimeout(() => fetchFileList(), 1000);
                 return response.json();
             } else {
                 throw new Error('삭제 요청에 실패했습니다');
@@ -308,6 +308,7 @@ function handleFileDelete() {
             console.error();
         });
     });
+
 }
 
 function handleFolderCreate() {

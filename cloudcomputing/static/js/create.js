@@ -78,9 +78,9 @@ function createAccount() {
   })
     .then(response => {
         
-        if (response.status === 200) {
+        if (response.status === 201) {
             window.location.href = 'http://localhost:8000/login/';
-        } else if (response.status === 401) {
+        } else if (response.status === 400) {
             throw new Error('입력 조건에 맞지 않습니다');
         } else {
             throw new Error('회원가입 요청에 실패했습니다');
